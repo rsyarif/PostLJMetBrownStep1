@@ -1,4 +1,4 @@
-# LJMet-Slimmer
+# PostLJMetBrownStep1 - TpTp Multilepton
 
 Code (step1.cc/.h) to slim LJMet trees. Built on ROOT's MakeClass.
 Download the CSC & ECAL bad event files from CMS TWiki!
