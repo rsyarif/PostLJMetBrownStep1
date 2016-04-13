@@ -137,24 +137,24 @@ void step1::Loop()
    inputTree->SetBranchStatus("theJetAK8Phi_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8Mass_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8Energy_JetSubCalc",1);
-   inputTree->SetBranchStatus("WPt_JetSubCalc",1);
-   inputTree->SetBranchStatus("WEta_JetSubCalc",1);
-   inputTree->SetBranchStatus("WPhi_JetSubCalc",1);
-   inputTree->SetBranchStatus("WEnergy_JetSubCalc",1);
-   inputTree->SetBranchStatus("WdecayDR_JetSubCalc",1);
+//    inputTree->SetBranchStatus("WPt_JetSubCalc",1);
+//    inputTree->SetBranchStatus("WEta_JetSubCalc",1);
+//    inputTree->SetBranchStatus("WPhi_JetSubCalc",1);
+//    inputTree->SetBranchStatus("WEnergy_JetSubCalc",1);
+//    inputTree->SetBranchStatus("WdecayDR_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8NjettinessTau1_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8NjettinessTau2_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8NjettinessTau3_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8PrunedMass_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8SoftDropMass_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8PrunedTau21Tag_JetSubCalc",1);
-   inputTree->SetBranchStatus("theJetAK8SDSubjetNCSVMSF_JetSubCalc",1);
+//    inputTree->SetBranchStatus("theJetAK8SDSubjetNCSVMSF_JetSubCalc",1); //UNCOMMENT LATER!
    inputTree->SetBranchStatus("theJetAK8SDSubjetPt_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8SDSubjetEta_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8SDSubjetPhi_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8SDSubjetMass_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8SDSubjetCSV_JetSubCalc",1);
-   inputTree->SetBranchStatus("theJetAK8SDSubjetBTag_JetSubCalc",1);
+//    inputTree->SetBranchStatus("theJetAK8SDSubjetBTag_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8SDSubjetIndex_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8SDSubjetSize_JetSubCalc",1);
    
@@ -266,11 +266,11 @@ void step1::Loop()
    outputTree->Branch("AK4HTpMETpLepPt",&AK4HTpMETpLepPt,"AK4HTpMETpLepPt/F");
    outputTree->Branch("AK4HT",&AK4HT,"AK4HT/F");
 
-   outputTree->Branch("WPt_JetSubCalc",&WPt_JetSubCalc);
-   outputTree->Branch("WEta_JetSubCalc",&WEta_JetSubCalc);
-   outputTree->Branch("WPhi_JetSubCalc",&WPhi_JetSubCalc);
-   outputTree->Branch("WEnergy_JetSubCalc",&WEnergy_JetSubCalc);
-   outputTree->Branch("WdecayDR_JetSubCalc",&WdecayDR_JetSubCalc);
+//    outputTree->Branch("WPt_JetSubCalc",&WPt_JetSubCalc);
+//    outputTree->Branch("WEta_JetSubCalc",&WEta_JetSubCalc);
+//    outputTree->Branch("WPhi_JetSubCalc",&WPhi_JetSubCalc);
+//    outputTree->Branch("WEnergy_JetSubCalc",&WEnergy_JetSubCalc);
+//    outputTree->Branch("WdecayDR_JetSubCalc",&WdecayDR_JetSubCalc);
 
    outputTree->Branch("theJetAK8Pt_JetSubCalc_PtOrdered",&theJetAK8Pt_JetSubCalc_PtOrdered);
    outputTree->Branch("theJetAK8Eta_JetSubCalc_PtOrdered",&theJetAK8Eta_JetSubCalc_PtOrdered);
@@ -412,7 +412,6 @@ void step1::Loop()
    int npass_met          = 0;
    int npass_njets        = 0;
    int npass_JetLeadPt    = 0;
-   int npass_JetSubLeadPt = 0;
    int npass_all          = 0;
    
    int totalLep = 0;
@@ -441,7 +440,7 @@ void step1::Loop()
       std::cout << " " << endl;
       std::cout << "=======================================================" << endl;
       
-      if(jentry % 1 ==0) std::cout<<"Completed "<<jentry<<" out of "<<nentries<<" events"<<std::endl;
+      if(jentry % 1000 ==0) std::cout<<"Completed "<<jentry<<" out of "<<nentries<<" events"<<std::endl;
       
 //       std::cout << "Check GetEntry: " << endl;
 //       std::cout	<< "elPt_singleLepCalc->size() = " << elPt_singleLepCalc->size() << endl;
@@ -571,6 +570,7 @@ void step1::Loop()
       
       std::cout << "Nleptons = " << tightlepindex+loosenottightlepindex << endl;
       if(tightlepindex+loosenottightlepindex<3) continue; //skip if there is less than 3 loose leptons.
+      if(isMC && tightlepindex<3) continue; //skip if there is less than 3 tight leptons for MC (not creating ddBKg).
 
       //Pt ordering
       AllLeptonPt_PtOrdered.clear();
@@ -671,7 +671,7 @@ void step1::Loop()
       //mode 0 = nominal. 1 = fakerate plus, 2 = fakerate minus, 3 = passrate plus, 4 = passrate minus
       //see feModeBehavior in fakerate.h
       double bkgweights[nmodes] = {0};
-//       if(makeBkgs){
+      if(!isMC){
 			cout << " isEEE = "<< isEEE << ", isEEM = "<< isEEM << ", isEMM = "<<isEMM << ", isMMM = "<<isMMM << endl; 
 	
 			if(isEEE){
@@ -695,11 +695,12 @@ void step1::Loop()
 				}
 			}
 			else{ cerr<<"Error! no combination of eee, eem, emm, mmm, so what the hell is it?"<<endl; assert(0);}
-// 		}//end make background weights.
+		}//end make background weights.
 // 		if(printlevel >=3){ 
 			for(int imode=0;imode<nmodes;imode++)cout << "bkgweights["<<imode<<"] ="<< bkgweights[imode]<<endl;	
 // 		}
 		
+		ddBkgWeights.clear();
 		for(int imode=0; imode<nmodes;imode++){ddBkgWeights.push_back(bkgweights[imode]);}
 			
 // 		if(printlevel > 5) cout << "check point A" << endl; //debug rizki
@@ -1116,28 +1117,30 @@ void step1::Loop()
       int njetsak8 = 0;
       vector<float> maxsubcsv;
       vector<pair<double,int>> jetak8ptindpair;
-      for(unsigned int ijet=0; ijet < theJetAK8Pt_JetSubCalc->size(); ijet++){
-		maxsubcsv.push_back(-99.0);
-		if(theJetAK8Pt_JetSubCalc->at(ijet) < 200 || fabs(theJetAK8Eta_JetSubCalc->at(ijet)) > 2.4) continue;
-		if(theJetAK8NjettinessTau1_JetSubCalc->at(ijet)==0) continue;
-
-		njetsak8 += 1; 
-		jetak8ptindpair.push_back(std::make_pair(theJetAK8Pt_JetSubCalc->at(ijet),ijet));
-	  
-		int firstsub = theJetAK8SDSubjetIndex_JetSubCalc->at(ijet);
-		int nsubs = theJetAK8SDSubjetSize_JetSubCalc->at(ijet);
-		double maxCSVsubjet = 0;
-		TLorentzVector tempsubjet;
-		TLorentzVector sumsubjets; sumsubjets.SetPtEtaPhiM(0,0,0,0);
-		for(int isub = firstsub; isub < firstsub + nsubs; isub++){
-		  tempsubjet.SetPtEtaPhiM(theJetAK8SDSubjetPt_JetSubCalc->at(isub),theJetAK8SDSubjetEta_JetSubCalc->at(isub),theJetAK8SDSubjetPhi_JetSubCalc->at(isub),theJetAK8SDSubjetMass_JetSubCalc->at(isub));
-		  sumsubjets += tempsubjet;
-		  if(theJetAK8SDSubjetCSV_JetSubCalc->at(isub) > maxCSVsubjet) maxCSVsubjet = theJetAK8SDSubjetCSV_JetSubCalc->at(isub);
-		  if(isub != firstsub && theJetAK8SDSubjetPt_JetSubCalc->at(isub) == theJetAK8SDSubjetPt_JetSubCalc->at(firstsub)) cout << "subjets have matching pT, something's wrong" << endl;
-		}
-		maxsubcsv.at(ijet) = maxCSVsubjet;
-		if(theJetAK8Pt_JetSubCalc->at(ijet) > 300 &&  theJetAK8SDSubjetNCSVMSF_JetSubCalc->at(ijet) > 0 && sumsubjets.M() > 60 && sumsubjets.M() < 150) nHtags += 1;
-      }
+//UNCOMMENT LATER! - start
+//       for(unsigned int ijet=0; ijet < theJetAK8Pt_JetSubCalc->size(); ijet++){
+// 		maxsubcsv.push_back(-99.0);
+// 		if(theJetAK8Pt_JetSubCalc->at(ijet) < 200 || fabs(theJetAK8Eta_JetSubCalc->at(ijet)) > 2.4) continue;
+// 		if(theJetAK8NjettinessTau1_JetSubCalc->at(ijet)==0) continue;
+// 
+// 		njetsak8 += 1; 
+// 		jetak8ptindpair.push_back(std::make_pair(theJetAK8Pt_JetSubCalc->at(ijet),ijet));
+// 	  
+// 		int firstsub = theJetAK8SDSubjetIndex_JetSubCalc->at(ijet);
+// 		int nsubs = theJetAK8SDSubjetSize_JetSubCalc->at(ijet);
+// 		double maxCSVsubjet = 0;
+// 		TLorentzVector tempsubjet;
+// 		TLorentzVector sumsubjets; sumsubjets.SetPtEtaPhiM(0,0,0,0);
+// 		for(int isub = firstsub; isub < firstsub + nsubs; isub++){
+// 		  tempsubjet.SetPtEtaPhiM(theJetAK8SDSubjetPt_JetSubCalc->at(isub),theJetAK8SDSubjetEta_JetSubCalc->at(isub),theJetAK8SDSubjetPhi_JetSubCalc->at(isub),theJetAK8SDSubjetMass_JetSubCalc->at(isub));
+// 		  sumsubjets += tempsubjet;
+// 		  if(theJetAK8SDSubjetCSV_JetSubCalc->at(isub) > maxCSVsubjet) maxCSVsubjet = theJetAK8SDSubjetCSV_JetSubCalc->at(isub);
+// 		  if(isub != firstsub && theJetAK8SDSubjetPt_JetSubCalc->at(isub) == theJetAK8SDSubjetPt_JetSubCalc->at(firstsub)) cout << "subjets have matching pT, something's wrong" << endl;
+// 		}
+// 		maxsubcsv.at(ijet) = maxCSVsubjet;
+// 		if(theJetAK8Pt_JetSubCalc->at(ijet) > 300 &&  theJetAK8SDSubjetNCSVMSF_JetSubCalc->at(ijet) > 0 && sumsubjets.M() > 60 && sumsubjets.M() < 150) nHtags += 1; 
+//       }
+//UNCOMMENT LATER! - end
 
       //Pt ordering for AK8
       std::sort(jetak8ptindpair.begin(), jetak8ptindpair.end(), comparepair);
@@ -1277,15 +1280,17 @@ void step1::Loop()
 	  bool ismatched = false;
 	  TLorentzVector trueW;
 
-	  for(unsigned int iW = 0; iW < WPt_JetSubCalc->size(); iW++){
-	    if(WPt_JetSubCalc->at(iW) < 200) continue;
-
-	    trueW.SetPtEtaPhiE(WPt_JetSubCalc->at(iW),WEta_JetSubCalc->at(iW),WPhi_JetSubCalc->at(iW),WEnergy_JetSubCalc->at(iW));
-	    if(ak8_lv.DeltaR(trueW) < minDR){
-	      minDR = ak8_lv.DeltaR(trueW);
-	      matchedPt = WPt_JetSubCalc->at(iW);
-	    }
-   	  }	 
+//UNCOMMENT LATER! - start
+// 	  for(unsigned int iW = 0; iW < WPt_JetSubCalc->size(); iW++){
+// 	    if(WPt_JetSubCalc->at(iW) < 200) continue;
+// 
+// 	    trueW.SetPtEtaPhiE(WPt_JetSubCalc->at(iW),WEta_JetSubCalc->at(iW),WPhi_JetSubCalc->at(iW),WEnergy_JetSubCalc->at(iW));
+// 	    if(ak8_lv.DeltaR(trueW) < minDR){
+// 	      minDR = ak8_lv.DeltaR(trueW);
+// 	      matchedPt = WPt_JetSubCalc->at(iW);
+// 	    }
+//    	  }	 
+//UNCOMMENT LATER! - end
 	  if(minDR < 0.8) ismatched = true;
 
 	  double coin = gRandom->Rndm();
@@ -1468,7 +1473,6 @@ void step1::Loop()
    std::cout<<"Npassed_MET            = "<<npass_met<<" / "<<nentries<<std::endl;
    std::cout<<"Npassed_nJets          = "<<npass_njets<<" / "<<nentries<<std::endl;
    std::cout<<"Npassed_JetLeadPt      = "<<npass_JetLeadPt<<" / "<<nentries<<std::endl;
-   std::cout<<"Npassed_JetSubLeadPt   = "<<npass_JetSubLeadPt<<" / "<<nentries<<std::endl;
    std::cout<<"Npassed_ALL            = "<<npass_all<<" / "<<nentries<<std::endl;
    std::cout<<"Npassed_ALL_Triplepton            = "<<nPassTrilepton<<" / "<<nentries<<std::endl;
 	printf("Counts of eee: LLL(%i), LLT(%i), LTT(%i), TTT(%i)\n", Neee[0], Neee[1], Neee[2], Neee[3]);

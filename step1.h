@@ -1554,7 +1554,7 @@ void step1::Init(TTree *tree)
    inputTree->SetBranchAddress("theJetAK8SDSubjetIndex_JetSubCalc", &theJetAK8SDSubjetIndex_JetSubCalc, &b_theJetAK8SDSubjetIndex_JetSubCalc);
    inputTree->SetBranchAddress("theJetAK8SDSubjetNCSVL_JetSubCalc", &theJetAK8SDSubjetNCSVL_JetSubCalc, &b_theJetAK8SDSubjetNCSVL_JetSubCalc);
    inputTree->SetBranchAddress("theJetAK8SDSubjetNCSVM_JetSubCalc", &theJetAK8SDSubjetNCSVM_JetSubCalc, &b_theJetAK8SDSubjetNCSVM_JetSubCalc);
-   inputTree->SetBranchAddress("theJetAK8SDSubjetNCSVMSF_JetSubCalc", &theJetAK8SDSubjetNCSVMSF_JetSubCalc, &b_theJetAK8SDSubjetNCSVMSF_JetSubCalc);
+//    inputTree->SetBranchAddress("theJetAK8SDSubjetNCSVMSF_JetSubCalc", &theJetAK8SDSubjetNCSVMSF_JetSubCalc, &b_theJetAK8SDSubjetNCSVMSF_JetSubCalc); //UNCOMMENT LATER!
    inputTree->SetBranchAddress("theJetAK8SDSubjetSize_JetSubCalc", &theJetAK8SDSubjetSize_JetSubCalc, &b_theJetAK8SDSubjetSize_JetSubCalc);
    /*
    inputTree->SetBranchAddress("theJetAK8caTopSubjetIndex_JetSubCalc", &theJetAK8caTopSubjetIndex_JetSubCalc, &b_theJetAK8caTopSubjetIndex_JetSubCalc);
@@ -1690,11 +1690,11 @@ void step1::Init(TTree *tree)
    inputTree->SetBranchAddress("theJetAK8CHadEFrac_JetSubCalc", &theJetAK8CHadEFrac_JetSubCalc, &b_theJetAK8CHadEFrac_JetSubCalc);
    inputTree->SetBranchAddress("theJetAK8CHadEnergy_JetSubCalc", &theJetAK8CHadEnergy_JetSubCalc, &b_theJetAK8CHadEnergy_JetSubCalc);
    inputTree->SetBranchAddress("theJetAK8CSV_JetSubCalc", &theJetAK8CSV_JetSubCalc, &b_theJetAK8CSV_JetSubCalc);
-   inputTree->SetBranchAddress("WEnergy_JetSubCalc", &WEnergy_JetSubCalc, &b_WEnergy_JetSubCalc);
-   inputTree->SetBranchAddress("WEta_JetSubCalc", &WEta_JetSubCalc, &b_WEta_JetSubCalc);
-   inputTree->SetBranchAddress("WPhi_JetSubCalc", &WPhi_JetSubCalc, &b_WPhi_JetSubCalc);
-   inputTree->SetBranchAddress("WPt_JetSubCalc", &WPt_JetSubCalc, &b_WPt_JetSubCalc);
-   inputTree->SetBranchAddress("WdecayDR_JetSubCalc", &WdecayDR_JetSubCalc, &b_WdecayDR_JetSubCalc);
+//    inputTree->SetBranchAddress("WEnergy_JetSubCalc", &WEnergy_JetSubCalc, &b_WEnergy_JetSubCalc); //UNCOMMENT LATER!
+//    inputTree->SetBranchAddress("WEta_JetSubCalc", &WEta_JetSubCalc, &b_WEta_JetSubCalc);
+//    inputTree->SetBranchAddress("WPhi_JetSubCalc", &WPhi_JetSubCalc, &b_WPhi_JetSubCalc);
+//    inputTree->SetBranchAddress("WPt_JetSubCalc", &WPt_JetSubCalc, &b_WPt_JetSubCalc);
+//    inputTree->SetBranchAddress("WdecayDR_JetSubCalc", &WdecayDR_JetSubCalc, &b_WdecayDR_JetSubCalc);
    inputTree->SetBranchAddress("theJetAK8Energy_JetSubCalc", &theJetAK8Energy_JetSubCalc, &b_theJetAK8Energy_JetSubCalc);
    inputTree->SetBranchAddress("theJetAK8Eta_JetSubCalc", &theJetAK8Eta_JetSubCalc, &b_theJetAK8Eta_JetSubCalc);
    inputTree->SetBranchAddress("theJetAK8FilteredMass_JetSubCalc", &theJetAK8FilteredMass_JetSubCalc, &b_theJetAK8FilteredMass_JetSubCalc);

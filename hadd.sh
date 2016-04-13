@@ -2,29 +2,29 @@
 
 echo "HADDING NOMINAL"
 
-python -u haddoutput.py LJMet_1lepTT_031516_step1 LJMet_1lepTT_031516_step1hadds nominal
+python -u haddoutput.py LJMet_3lep_122115_step1 LJMet_3lep_122115_step1hadds nominal
 
 echo "HADDING JECUP"
 
-python -u haddoutput.py LJMet_1lepTT_031516_step1 LJMet_1lepTT_031516_step1hadds JECup
+python -u haddoutput.py LJMet_3lep_122115_step1 LJMet_3lep_122115_step1hadds JEC_up
 
 echo "HADDING JECDOWN"
-python -u haddoutput.py LJMet_1lepTT_031516_step1 LJMet_1lepTT_031516_step1hadds JECdown
+python -u haddoutput.py LJMet_3lep_122115_step1 LJMet_3lep_122115_step1hadds JEC_down
 
 echo "HADDING JERUP"
 
-python -u haddoutput.py LJMet_1lepTT_031516_step1 LJMet_1lepTT_031516_step1hadds JERup
+python -u haddoutput.py LJMet_3lep_122115_step1 LJMet_3lep_122115_step1hadds JER_up
 
 echo "HADDING JERDOWN"
 
-python -u haddoutput.py LJMet_1lepTT_031516_step1 LJMet_1lepTT_031516_step1hadds JERdown
+python -u haddoutput.py LJMet_3lep_122115_step1 LJMet_3lep_122115_step1hadds JER_down
 
 echo "HADDING BTAGUP"
 
-python -u haddoutput.py LJMet_1lepTT_031516_step1 LJMet_1lepTT_031516_step1hadds BTAGup
+python -u haddoutput.py LJMet_3lep_122115_step1 LJMet_3lep_122115_step1hadds BTag_up
 
 echo "HADDING BTAGDOWN"
 
-python -u haddoutput.py LJMet_1lepTT_031516_step1 LJMet_1lepTT_031516_step1hadds BTAGdown
+python -u haddoutput.py LJMet_3lep_122115_step1 LJMet_3lep_122115_step1hadds BTag_down
 
 echo "DONE"

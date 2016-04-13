@@ -123,7 +123,12 @@ dirList = [
     'WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_25ns',
     'WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_25ns',
     'WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_25ns',
-    'WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_25ns',    
+    'WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_25ns',
+    
+    'WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8',
+    'WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8',
+    'ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8_LOCALCOPY',
+        
     ]
 
 if shift == 'nominal':
@@ -134,12 +139,22 @@ if shift == 'nominal':
     dirList.append('ST_tW_antitop_5f_scaledown_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1_25ns')      
     dirList.append('TT_TuneCUETP8M1_13TeV-powheg-scaledown-pythia8_25ns')
     dirList.append('TT_TuneCUETP8M1_13TeV-powheg-scaleup-pythia8_25ns')
-    dirList.append('SingleElectron_RRC')
-    dirList.append('SingleMuon_RRC')
-    dirList.append('SingleElectron_RRD')
-    dirList.append('SingleMuon_RRD')
-    dirList.append('SingleElectron_PRD_xrd')
-    dirList.append('SingleMuon_PRD_xrd')
+#     dirList.append('SingleElectron_RRC')
+#     dirList.append('SingleMuon_RRC')
+#     dirList.append('SingleElectron_RRD')
+#     dirList.append('SingleMuon_RRD')
+#     dirList.append('SingleElectron_PRD_xrd')
+#     dirList.append('SingleMuon_PRD_xrd')
+    dirList.append('DoubleEG_PRD_25ns')
+    dirList.append('DoubleEG_RRC_25ns')
+    dirList.append('DoubleEG_RRD_25ns')
+    dirList.append('DoubleMuon_PRD_25ns')
+    dirList.append('DoubleMuon_RRC_25ns')
+    dirList.append('DoubleMuon_RRD_25ns')
+    dirList.append('MuonEG_PRD_25ns')
+    dirList.append('MuonEG_RRC_25ns')
+    dirList.append('MuonEG_RRD_25ns')
+
 
 for sample in dirList:
 

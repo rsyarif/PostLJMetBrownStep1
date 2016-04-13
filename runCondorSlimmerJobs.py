@@ -9,10 +9,10 @@ shift = sys.argv[1]
 
 #IO directories must be full paths
 
-relbase = '/uscms_data/d3/jmanagan/CMSSW_7_4_14/'
-inputDir='/eos/uscms/store/user/lpcljm/LJMet_1lepTT_022916/'+shift+'/'
-outputDir='/eos/uscms/store/user/lpcljm/LJMet_1lepTT_031516_step1/'+shift+'/'
-condorDir='/uscms_data/d3/jmanagan/LJMet_1lepTT_031516_step1/'+shift+'/'
+relbase = '/uscms_data/d3/rsyarif/Spring2016/TprimeAnalysis_BrownFrameWork/CMSSW_7_6_3/'
+inputDir='/eos/uscms/store/user/lpcljm/LJMet_3lep_122115/'+shift+'/'
+outputDir='/eos/uscms/store/user/lpcljm/LJMet_3lep_122115_step1/'+shift+'/'
+condorDir='/uscms_data/d3/rsyarif/Spring2016/TprimeAnalysis_BrownFrameWork/LJMet_3lep_122115_step1/'+shift+'/'
 
 runDir=os.getcwd()
 # Can change the file directory if needed
@@ -74,7 +74,7 @@ universe = vanilla
 Executable = %(RUNDIR)s/makeStep1.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
-Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
+Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
 Output = %(FILENAME)s_%(LABEL)s.out
 Error = %(FILENAME)s_%(LABEL)s.err
 Log = %(FILENAME)s_%(LABEL)s.log
@@ -127,7 +127,7 @@ universe = vanilla
 Executable = %(RUNDIR)s/makeStep1.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
-Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
+Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
 Output = %(FILENAME)s_%(LABEL)s.out
 Error = %(FILENAME)s_%(LABEL)s.err
 Log = %(FILENAME)s_%(LABEL)s.log
@@ -176,7 +176,11 @@ dirList = [
     'WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_25ns',
     'WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_25ns',
     'WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_25ns',
-    'WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_25ns',
+    'WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_25ns',  
+    
+    'WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8',
+    'WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8',
+    'ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8_LOCALCOPY',
     
     ]
 
@@ -188,12 +192,22 @@ if shift == 'nominal':
     dirList.append('ST_tW_antitop_5f_scaledown_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1_25ns')      
     dirList.append('TT_TuneCUETP8M1_13TeV-powheg-scaledown-pythia8_25ns')
     dirList.append('TT_TuneCUETP8M1_13TeV-powheg-scaleup-pythia8_25ns')
-    dirList.append('SingleElectron_RRC')
-    dirList.append('SingleMuon_RRC')
-    dirList.append('SingleElectron_RRD')
-    dirList.append('SingleMuon_RRD')
-    dirList.append('SingleElectron_PRD_xrd')
-    dirList.append('SingleMuon_PRD_xrd')
+#     dirList.append('SingleElectron_RRC')
+#     dirList.append('SingleMuon_RRC')
+#     dirList.append('SingleElectron_RRD')
+#     dirList.append('SingleMuon_RRD')
+#     dirList.append('SingleElectron_PRD_xrd')
+#     dirList.append('SingleMuon_PRD_xrd')    
+    dirList.append('DoubleEG_PRD_25ns')
+    dirList.append('DoubleEG_RRC_25ns')
+    dirList.append('DoubleEG_RRD_25ns')
+    dirList.append('DoubleMuon_PRD_25ns')
+    dirList.append('DoubleMuon_RRC_25ns')
+    dirList.append('DoubleMuon_RRD_25ns')
+    dirList.append('MuonEG_PRD_25ns')
+    dirList.append('MuonEG_RRC_25ns')
+    dirList.append('MuonEG_RRD_25ns')
+
 
 for sample in dirList:
     os.system('eos root://cmseos.fnal.gov/ mkdir -p '+outDir+sample)
@@ -215,7 +229,7 @@ universe = vanilla
 Executable = %(RUNDIR)s/makeStep1.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
-Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
+Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
 Output = %(FILENAME)s.out
 Error = %(FILENAME)s.err
 Log = %(FILENAME)s.log
@@ -253,7 +267,7 @@ universe = vanilla
 Executable = %(RUNDIR)s/makeStep1.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
-Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
+Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
 Output = %(FILENAME)s_%(LABEL)s.out
 Error = %(FILENAME)s_%(LABEL)s.err
 Log = %(FILENAME)s_%(LABEL)s.log
