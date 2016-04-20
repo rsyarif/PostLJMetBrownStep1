@@ -89,58 +89,58 @@ Queue 1"""%dict)
             os.chdir('%s'%(runDir))
             print count, "jobs submitted!!!"
 
-signalList = [
-    'BprimeBprime_M-700_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
-    'BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
-    'BprimeBprime_M-900_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
-    'BprimeBprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
-    'BprimeBprime_M-1100_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
-    'BprimeBprime_M-1200_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
-    'BprimeBprime_M-1300_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
-    'BprimeBprime_M-1400_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
-    'BprimeBprime_M-1500_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
-    'BprimeBprime_M-1600_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
-    'BprimeBprime_M-1700_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
-    'BprimeBprime_M-1800_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
-    ]
-
-signalOutList = ['TWTW','BZTW','BHTW','BZBH','BZBZ','BHBH']
-
-for sample in signalList:
-    rootfiles = EOSlist_root_files(inputDir+sample)
-    relPath = sample        
-    for outlabel in signalOutList:
-        os.system('eos root://cmseos.fnal.gov/ mkdir -p '+outDir+sample+'_'+outlabel)
-        os.system('mkdir -p '+condorDir+sample+'_'+outlabel)
-
-        for file in rootfiles:
-            #        print file
-            rawname = file[:-5]
-            count+=1
-            dict={'RUNDIR':runDir, 'POST':runDirPost, 'RELPATH':relPath, 'LABEL':outlabel, 'CONDORDIR':condorDir, 'INPUTDIR':inDir, 'FILENAME':rawname, 'PROXY':proxyPath, 'CMSSWBASE':relbase, 'OUTPUTDIR':outDir}
-            jdfName=condorDir+'/%(RELPATH)s_%(LABEL)s/%(FILENAME)s_%(LABEL)s.job'%dict
-            print jdfName
-            jdf=open(jdfName,'w')
-            jdf.write(
-                """x509userproxy = %(PROXY)s
-universe = vanilla
-Executable = %(RUNDIR)s/makeStep1.sh
-Should_Transfer_Files = YES
-WhenToTransferOutput = ON_EXIT
-Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
-Output = %(FILENAME)s_%(LABEL)s.out
-Error = %(FILENAME)s_%(LABEL)s.err
-Log = %(FILENAME)s_%(LABEL)s.log
-Notification = Never
-Arguments = %(FILENAME)s.root %(FILENAME)s_%(LABEL)s.root %(INPUTDIR)s/%(RELPATH)s %(OUTPUTDIR)s/%(RELPATH)s_%(LABEL)s
-
-Queue 1"""%dict)
-            jdf.close()
-            os.chdir('%s/%s_%s'%(condorDir,relPath,outlabel))
-            os.system('condor_submit %(FILENAME)s_%(LABEL)s.job'%dict)
-            os.system('sleep 0.5')                                
-            os.chdir('%s'%(runDir))
-            print count, "jobs submitted!!!"
+# signalList = [
+#     'BprimeBprime_M-700_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
+#     'BprimeBprime_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
+#     'BprimeBprime_M-900_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
+#     'BprimeBprime_M-1000_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
+#     'BprimeBprime_M-1100_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
+#     'BprimeBprime_M-1200_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
+#     'BprimeBprime_M-1300_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
+#     'BprimeBprime_M-1400_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
+#     'BprimeBprime_M-1500_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
+#     'BprimeBprime_M-1600_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
+#     'BprimeBprime_M-1700_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
+#     'BprimeBprime_M-1800_TuneCUETP8M1_13TeV-madgraph-pythia8_25ns',
+#     ]
+# 
+# signalOutList = ['TWTW','BZTW','BHTW','BZBH','BZBZ','BHBH']
+# 
+# for sample in signalList:
+#     rootfiles = EOSlist_root_files(inputDir+sample)
+#     relPath = sample        
+#     for outlabel in signalOutList:
+#         os.system('eos root://cmseos.fnal.gov/ mkdir -p '+outDir+sample+'_'+outlabel)
+#         os.system('mkdir -p '+condorDir+sample+'_'+outlabel)
+# 
+#         for file in rootfiles:
+#             #        print file
+#             rawname = file[:-5]
+#             count+=1
+#             dict={'RUNDIR':runDir, 'POST':runDirPost, 'RELPATH':relPath, 'LABEL':outlabel, 'CONDORDIR':condorDir, 'INPUTDIR':inDir, 'FILENAME':rawname, 'PROXY':proxyPath, 'CMSSWBASE':relbase, 'OUTPUTDIR':outDir}
+#             jdfName=condorDir+'/%(RELPATH)s_%(LABEL)s/%(FILENAME)s_%(LABEL)s.job'%dict
+#             print jdfName
+#             jdf=open(jdfName,'w')
+#             jdf.write(
+#                 """x509userproxy = %(PROXY)s
+# universe = vanilla
+# Executable = %(RUNDIR)s/makeStep1.sh
+# Should_Transfer_Files = YES
+# WhenToTransferOutput = ON_EXIT
+# Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
+# Output = %(FILENAME)s_%(LABEL)s.out
+# Error = %(FILENAME)s_%(LABEL)s.err
+# Log = %(FILENAME)s_%(LABEL)s.log
+# Notification = Never
+# Arguments = %(FILENAME)s.root %(FILENAME)s_%(LABEL)s.root %(INPUTDIR)s/%(RELPATH)s %(OUTPUTDIR)s/%(RELPATH)s_%(LABEL)s
+# 
+# Queue 1"""%dict)
+#             jdf.close()
+#             os.chdir('%s/%s_%s'%(condorDir,relPath,outlabel))
+#             os.system('condor_submit %(FILENAME)s_%(LABEL)s.job'%dict)
+#             os.system('sleep 0.5')                                
+#             os.chdir('%s'%(runDir))
+#             print count, "jobs submitted!!!"
 
 dirList = [
     'TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns',
@@ -150,7 +150,8 @@ dirList = [
     'TT_Mtt-700to1000_TuneCUETP8M1_13TeV-powheg-pythia8_25ns',
     'WW_TuneCUETP8M1_13TeV-pythia8_25ns',						      
     'WZ_TuneCUETP8M1_13TeV-pythia8_25ns',						      
-    'ZZ_TuneCUETP8M1_13TeV-pythia8_25ns',						      
+    'ZZ_TuneCUETP8M1_13TeV-pythia8_25ns',
+    'DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns'						      
     'DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns',			      
     'ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_25ns',		      
     'ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_25ns',		      
