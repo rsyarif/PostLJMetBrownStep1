@@ -237,6 +237,11 @@ void step1::Loop()
    outputTree->Branch("isEEM",&isEEM,"isEEM/I");
    outputTree->Branch("isEMM",&isEMM,"isEMM/I");
    outputTree->Branch("isMMM",&isMMM,"isMMM/I");
+   
+   outputTree->Branch("MCPastTrigger",&MCPastTrigger,"MCPastTrigger/I");
+   outputTree->Branch("MCPastTriggerAlt",&MCPastTriggerAlt,"MCPastTriggerAlt/I");
+   outputTree->Branch("DataPastTrigger",&DataPastTrigger,"DataPastTrigger/I");
+   outputTree->Branch("DataPastTriggerAlt",&DataPastTriggerAlt,"DataPastTriggerAlt/I");
 
    outputTree->Branch("corr_met_singleLepCalc",&corr_met_singleLepCalc,"corr_met_singleLepCalc/D");
    outputTree->Branch("corr_met_phi_singleLepCalc",&corr_met_phi_singleLepCalc,"corr_met_phi_singleLepCalc/D");
@@ -409,6 +414,7 @@ void step1::Loop()
    double puweight260627_65ub[60] = {1.458817e+02, 1.724645e+02, 1.043786e+02, 4.182011e+01, 2.579572e+01, 5.495080e+00, 3.731141e+00, 4.618505e+00, 4.765473e+00, 3.872168e+00, 3.259346e+00, 2.705177e+00, 1.908453e+00, 1.092269e+00, 5.137612e-01, 2.085454e-01, 8.454498e-02, 4.109705e-02, 2.206794e-02, 1.053976e-02, 4.084606e-03, 1.298473e-03, 3.698050e-04, 1.135070e-04, 4.460047e-05, 2.240654e-05, 1.319444e-05, 8.644198e-06, 5.969210e-06, 4.142850e-06, 2.600931e-06, 1.398830e-06, 5.905424e-07, 2.124612e-07, 6.132579e-08, 1.821361e-08, 4.691640e-09, 1.254258e-09, 2.966644e-10, 7.328361e-11, 1.703655e-11, 3.277952e-12, 6.826269e-13, 1.087907e-13, 2.182661e-14, 3.753385e-15, 1.408114e-15, 0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00, 0.000000e+00};
    double puweight260627_72ub_central[60] = {1.088e+02, 1.446e+02, 8.940e+01, 3.287e+01, 1.730e+01, 2.948e+00, 1.504e+00, 1.727e+00, 2.433e+00, 2.557e+00, 2.567e+00, 2.573e+00, 2.328e+00, 1.803e+00, 1.176e+00, 6.448e-01, 3.032e-01, 1.315e-01, 6.179e-02, 3.525e-02, 2.165e-02, 1.219e-02, 5.878e-03, 2.434e-03, 9.180e-04, 3.608e-04, 1.720e-04, 1.043e-04, 7.446e-05, 5.795e-05, 4.336e-05, 2.903e-05, 1.572e-05, 7.404e-06, 2.842e-06, 1.137e-06, 3.988e-07, 1.468e-07, 4.833e-08, 1.679e-08, 5.547e-09, 1.533e-09, 4.632e-10, 1.082e-10, 3.210e-11, 8.253e-12, 4.917e-12, 1.400e-12, 8.834e-12, 1.222e-12, 5.321e-14, 0.000e+00, 0.000e+00, 0.000e+00, 0.000e+00, 0.000e+00, 0.000e+00, 0.000e+00, 0.000e+00, 0.000e+00};
 
+   int npass_trigger      = 0;
    int npass_met          = 0;
    int npass_njets        = 0;
    int npass_JetLeadPt    = 0;
@@ -896,217 +902,283 @@ void step1::Loop()
 
       if(isMC){ //MC triggers check
 
-	// GET SOME TRIGGER SCALE FACTORS PER EVENT
+//example for looping trigger. create output branch!      
+//       if(isE){
+// 		  for(unsigned int itrig=0; itrig < vsSelMCTriggersEl_singleLepCalc->size(); itrig++){
+// 			if(vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele27_eta2p1_WP75_Gsf_v1" && viSelMCTriggersEl_singleLepCalc->at(itrig) > 0) isPastTrigMC = 1;
+// 			if(vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50_v1" && viSelMCTriggersEl_singleLepCalc->at(itrig) > 0) isPastTrigMCAlt = 1;
+// 	  }
 
-	for(unsigned int ilep = 0; ilep < TightLeptonPt_PtOrdered.size(); ilep++){
-	  double lepeta = TightLeptonEta_PtOrdered.at(ilep);
-	  double leppt = TightLeptonPt_PtOrdered.at(ilep);
+   		if(isEEE){
+		  for(unsigned int itrig=0; itrig < vsSelMCTriggersEl_singleLepCalc->size(); itrig++){
+			if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1" || vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v2" || vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v3" || vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v4") && viSelMCTriggersEl_singleLepCalc->at(itrig) > 0) isPastTrigMC = 1;
+	  		}
+	  	}
+   		if(isEEM){
+		  for(unsigned int itrig=0; itrig < vsSelMCTriggersEl_singleLepCalc->size(); itrig++){
+			if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1" || vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v2" || vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v3" || vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v4") && viSelMCTriggersEl_singleLepCalc->at(itrig) > 0) isPastTrigMC = 1;
+	  		}
+	  	}
+   		if(isEMM){
+		  for(unsigned int itrig=0; itrig < vsSelMCTriggersMu_singleLepCalc->size(); itrig++){
+			if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1" || vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v2" || vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v3" || vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v4") && viSelMCTriggersMu_singleLepCalc->at(itrig) > 0) isPastTrigMC = 1;
+	  		}
+	  	}
+   		if(isMMM){
+		  for(unsigned int itrig=0; itrig < vsSelMCTriggersMu_singleLepCalc->size(); itrig++){
+			if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_TripleMu_12_10_5_v1" || vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_TripleMu_12_10_5_v2" || vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_TripleMu_12_10_5_v3" || vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_TripleMu_12_10_5_v4") && viSelMCTriggersMu_singleLepCalc->at(itrig) > 0) isPastTrigMC = 1;
+	  		}
+	  	}
+
+
+		// GET SOME TRIGGER SCALE FACTORS PER EVENT
+
+		for(unsigned int ilep = 0; ilep < TightLeptonPt_PtOrdered.size(); ilep++){
+		  double lepeta = TightLeptonEta_PtOrdered.at(ilep);
+		  double leppt = TightLeptonPt_PtOrdered.at(ilep);
 	  
-	  if(TightLeptonFlavor_PtOrdered.at(ilep) == 0){
+		  if(TightLeptonFlavor_PtOrdered.at(ilep) == 0){
 
-	    //miniIso < 0.1 scale factors from https://indico.cern.ch/event/370512/contribution/1/attachments/1176496/1701148/2015_10_26_tnp.pdf
-	    if(fabs(lepeta) < 1.442){
-	      if(leppt > 10 && leppt < 20) isosf *= 0.979; // +/-0.004 
-	      else if(leppt < 30) isosf *= 0.988; // +/-0.002
-	      else if(leppt < 40) isosf *= 0.995; // +/-0.022
-	      else if(leppt < 50) isosf *= 0.995; // +/-0.011
-	      else if(leppt < 200) isosf *= 0.995; // +/-0.000
-	    }
-	    else if(fabs(lepeta) < 1.566){
-	      if(leppt > 10 && leppt < 20) isosf *= 0.909; // +/-0.05 
-	      else if(leppt < 30) isosf *= 0.982; // +/-0.014
-	      else if(leppt < 40) isosf *= 1.001; // +/-0.006
-	      else if(leppt < 50) isosf *= 0.993; // +/-0.007
-	      else if(leppt < 200) isosf *= 0.988; // +/-0.014
-	    }
-	    else if(fabs(lepeta) < 2.5){
-	      if(leppt > 10 && leppt < 20) isosf *= 0.984; // +/-0.011
-	      else if(leppt < 30) isosf *= 0.997; // +/-0.002
-	      else if(leppt < 40) isosf *= 1.000; // +/-0.001
-	      else if(leppt < 50) isosf *= 1.019; // +/-0.002
-	      else if(leppt < 200) isosf *= 1.000; // +/-0.002
-	    }
-	    else isosf *= 1.;
-	    
-	    //MVA-based ID scale factors (non-triggering) from Clint Richardson https://indico.cern.ch/event/459111/contribution/1/attachments/1180755/1709309/B2G_Meeting_11.03.2015.pdf
-	    if(lepeta > -2.5 && lepeta < -1.6){
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9880;
-	      else if(leppt < 50.) lepidsf *= 0.9663; 
-	      else if(leppt < 70.) lepidsf *= 0.9884;
-	      else if(leppt < 90.) lepidsf *= 0.9762; 
-	      else if(leppt < 130.) lepidsf *= 0.9727; 
-	      else if(leppt < 180.) lepidsf *= 0.9978; 
-	      else if(leppt < 250.) lepidsf *= 0.9118;
-	      else if(leppt < 1000.) lepidsf *= 0.9205;
-	    } 
-	    else if(lepeta < -1.4){
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9788; 
-	      else if(leppt < 50.) lepidsf *= 0.9821; 
-	      else if(leppt < 70.) lepidsf *= 0.9567; 
-	      else if(leppt < 90.) lepidsf *= 0.9926; 
-	      else if(leppt < 130.) lepidsf *= 0.9889; 
-	      else if(leppt < 180.) lepidsf *= 1.0034; 
-	      else if(leppt < 250.) lepidsf *= 1.1316; 
-	      else if(leppt < 1000.) lepidsf *= 1.0000;
-	    }
-	    else if(lepeta < -0.8){
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9945;
-	      else if(leppt < 50.) lepidsf *= 0.9849; 
-	      else if(leppt < 70.) lepidsf *= 0.9944;
-	      else if(leppt < 90.) lepidsf *= 1.0008; 
-	      else if(leppt < 130.) lepidsf *= 1.0077; 
-	      else if(leppt < 180.) lepidsf *= 0.9915; 
-	      else if(leppt < 250.) lepidsf *= 0.9556; 
-	      else if(leppt < 1000.) lepidsf *= 0.9274;
-	    } 
-	    else if(lepeta < 0.0){
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9923; 
-	      else if(leppt < 50.) lepidsf *= 0.9794; 
-	      else if(leppt < 70.) lepidsf *= 0.9887; 
-	      else if(leppt < 90.) lepidsf *= 0.9742; 
-	      else if(leppt < 130.) lepidsf *= 0.9611; 
-	      else if(leppt < 180.) lepidsf *= 1.0176; 
-	      else if(leppt < 250.) lepidsf *= 0.9990; 
-	      else if(leppt < 1000.) lepidsf *= 0.9677;
-	    } 
-	    else if(lepeta < 0.8){
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9990; 
-	      else if(leppt < 50.) lepidsf *= 0.9808; 
-	      else if(leppt < 70.) lepidsf *= 0.9657; 
-	      else if(leppt < 90.) lepidsf *= 0.9963; 
-	      else if(leppt < 130.) lepidsf *= 0.9963; 
-	      else if(leppt < 180.) lepidsf *= 0.9725; 
-	      else if(leppt < 250.) lepidsf *= 0.9769; 
-	      else if(leppt < 1000.) lepidsf *= 0.9334;
-	    } 
-	    else if(lepeta < 1.4){
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9934; 
-	      else if(leppt < 50.) lepidsf *= 0.9814; 
-	      else if(leppt < 70.) lepidsf *= 0.9871; 
-	      else if(leppt < 90.) lepidsf *= 0.9846; 
-	      else if(leppt < 130.) lepidsf *= 0.9545; 
-	      else if(leppt < 180.) lepidsf *= 1.0141; 
-	      else if(leppt < 250.) lepidsf *= 0.9824; 
-	      else if(leppt < 1000.) lepidsf *= 0.9443;
-	    } 
-	    else if(lepeta < 1.6){
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9771; 
-	      else if(leppt < 50.) lepidsf *= 0.9796; 
-	      else if(leppt < 70.) lepidsf *= 0.9811; 
-	      else if(leppt < 90.) lepidsf *= 1.0291; 
-	      else if(leppt < 130.) lepidsf *= 0.9010; 
-	      else if(leppt < 180.) lepidsf *= 1.0490; 
-	      else if(leppt < 250.) lepidsf *= 0.6082; 
-	      else if(leppt < 1000.) lepidsf *= 1.1424;
-	    } 
-	    else if(lepeta < 2.5){
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9746; 
-	      else if(leppt < 50.) lepidsf *= 0.9835; 
-	      else if(leppt < 70.) lepidsf *= 0.9868; 
-	      else if(leppt < 90.) lepidsf *= 0.9843; 
-	      else if(leppt < 130.) lepidsf *= 1.0039; 
-	      else if(leppt < 180.) lepidsf *= 0.9597; 
-	      else if(leppt < 250.) lepidsf *= 0.9987; 
-	      else if(leppt < 1000.) lepidsf *= 1.0271;
-	    }
-	    else{lepidsf *= 1.0;}
-	  }
+			//miniIso < 0.1 scale factors from https://indico.cern.ch/event/370512/contribution/1/attachments/1176496/1701148/2015_10_26_tnp.pdf
+			if(fabs(lepeta) < 1.442){
+			  if(leppt > 10 && leppt < 20) isosf *= 0.979; // +/-0.004 
+			  else if(leppt < 30) isosf *= 0.988; // +/-0.002
+			  else if(leppt < 40) isosf *= 0.995; // +/-0.022
+			  else if(leppt < 50) isosf *= 0.995; // +/-0.011
+			  else if(leppt < 200) isosf *= 0.995; // +/-0.000
+			}
+			else if(fabs(lepeta) < 1.566){
+			  if(leppt > 10 && leppt < 20) isosf *= 0.909; // +/-0.05 
+			  else if(leppt < 30) isosf *= 0.982; // +/-0.014
+			  else if(leppt < 40) isosf *= 1.001; // +/-0.006
+			  else if(leppt < 50) isosf *= 0.993; // +/-0.007
+			  else if(leppt < 200) isosf *= 0.988; // +/-0.014
+			}
+			else if(fabs(lepeta) < 2.5){
+			  if(leppt > 10 && leppt < 20) isosf *= 0.984; // +/-0.011
+			  else if(leppt < 30) isosf *= 0.997; // +/-0.002
+			  else if(leppt < 40) isosf *= 1.000; // +/-0.001
+			  else if(leppt < 50) isosf *= 1.019; // +/-0.002
+			  else if(leppt < 200) isosf *= 1.000; // +/-0.002
+			}
+			else isosf *= 1.;
+		
+			//MVA-based ID scale factors (non-triggering) from Clint Richardson https://indico.cern.ch/event/459111/contribution/1/attachments/1180755/1709309/B2G_Meeting_11.03.2015.pdf
+			if(lepeta > -2.5 && lepeta < -1.6){
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9880;
+			  else if(leppt < 50.) lepidsf *= 0.9663; 
+			  else if(leppt < 70.) lepidsf *= 0.9884;
+			  else if(leppt < 90.) lepidsf *= 0.9762; 
+			  else if(leppt < 130.) lepidsf *= 0.9727; 
+			  else if(leppt < 180.) lepidsf *= 0.9978; 
+			  else if(leppt < 250.) lepidsf *= 0.9118;
+			  else if(leppt < 1000.) lepidsf *= 0.9205;
+			} 
+			else if(lepeta < -1.4){
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9788; 
+			  else if(leppt < 50.) lepidsf *= 0.9821; 
+			  else if(leppt < 70.) lepidsf *= 0.9567; 
+			  else if(leppt < 90.) lepidsf *= 0.9926; 
+			  else if(leppt < 130.) lepidsf *= 0.9889; 
+			  else if(leppt < 180.) lepidsf *= 1.0034; 
+			  else if(leppt < 250.) lepidsf *= 1.1316; 
+			  else if(leppt < 1000.) lepidsf *= 1.0000;
+			}
+			else if(lepeta < -0.8){
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9945;
+			  else if(leppt < 50.) lepidsf *= 0.9849; 
+			  else if(leppt < 70.) lepidsf *= 0.9944;
+			  else if(leppt < 90.) lepidsf *= 1.0008; 
+			  else if(leppt < 130.) lepidsf *= 1.0077; 
+			  else if(leppt < 180.) lepidsf *= 0.9915; 
+			  else if(leppt < 250.) lepidsf *= 0.9556; 
+			  else if(leppt < 1000.) lepidsf *= 0.9274;
+			} 
+			else if(lepeta < 0.0){
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9923; 
+			  else if(leppt < 50.) lepidsf *= 0.9794; 
+			  else if(leppt < 70.) lepidsf *= 0.9887; 
+			  else if(leppt < 90.) lepidsf *= 0.9742; 
+			  else if(leppt < 130.) lepidsf *= 0.9611; 
+			  else if(leppt < 180.) lepidsf *= 1.0176; 
+			  else if(leppt < 250.) lepidsf *= 0.9990; 
+			  else if(leppt < 1000.) lepidsf *= 0.9677;
+			} 
+			else if(lepeta < 0.8){
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9990; 
+			  else if(leppt < 50.) lepidsf *= 0.9808; 
+			  else if(leppt < 70.) lepidsf *= 0.9657; 
+			  else if(leppt < 90.) lepidsf *= 0.9963; 
+			  else if(leppt < 130.) lepidsf *= 0.9963; 
+			  else if(leppt < 180.) lepidsf *= 0.9725; 
+			  else if(leppt < 250.) lepidsf *= 0.9769; 
+			  else if(leppt < 1000.) lepidsf *= 0.9334;
+			} 
+			else if(lepeta < 1.4){
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9934; 
+			  else if(leppt < 50.) lepidsf *= 0.9814; 
+			  else if(leppt < 70.) lepidsf *= 0.9871; 
+			  else if(leppt < 90.) lepidsf *= 0.9846; 
+			  else if(leppt < 130.) lepidsf *= 0.9545; 
+			  else if(leppt < 180.) lepidsf *= 1.0141; 
+			  else if(leppt < 250.) lepidsf *= 0.9824; 
+			  else if(leppt < 1000.) lepidsf *= 0.9443;
+			} 
+			else if(lepeta < 1.6){
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9771; 
+			  else if(leppt < 50.) lepidsf *= 0.9796; 
+			  else if(leppt < 70.) lepidsf *= 0.9811; 
+			  else if(leppt < 90.) lepidsf *= 1.0291; 
+			  else if(leppt < 130.) lepidsf *= 0.9010; 
+			  else if(leppt < 180.) lepidsf *= 1.0490; 
+			  else if(leppt < 250.) lepidsf *= 0.6082; 
+			  else if(leppt < 1000.) lepidsf *= 1.1424;
+			} 
+			else if(lepeta < 2.5){
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9746; 
+			  else if(leppt < 50.) lepidsf *= 0.9835; 
+			  else if(leppt < 70.) lepidsf *= 0.9868; 
+			  else if(leppt < 90.) lepidsf *= 0.9843; 
+			  else if(leppt < 130.) lepidsf *= 1.0039; 
+			  else if(leppt < 180.) lepidsf *= 0.9597; 
+			  else if(leppt < 250.) lepidsf *= 0.9987; 
+			  else if(leppt < 1000.) lepidsf *= 1.0271;
+			}
+			else{lepidsf *= 1.0;}
+		  }
 
-	  //////// MUONS
-	  if(TightLeptonFlavor_PtOrdered.at(ilep) == 1){
+		  //////// MUONS
+		  if(TightLeptonFlavor_PtOrdered.at(ilep) == 1){
 
-	    //Mini-iso < 0.2 SFs from SUSY TWiki
-	    if(leppt < 40){
-	      if(fabs(lepeta) < 0.9) isosf *= 1.000;
-	      else if(fabs(lepeta) <  1.2) isosf *= 1.000;
-	      else if(fabs(lepeta) <  2.1) isosf *= 0.999;
-	      else if(fabs(lepeta) <  2.4) isosf *= 0.999;
-	    }
-	    else if(leppt < 50){
-	      if(fabs(lepeta) < 0.9) isosf *= 1.000;
-	      else if(fabs(lepeta) <  1.2) isosf *= 1.000;
-	      else if(fabs(lepeta) <  2.1) isosf *= 0.999;
-	      else if(fabs(lepeta) <  2.4) isosf *= 1.000;
-	    }
-	    else if(leppt < 60){
-	      if(fabs(lepeta) < 0.9) isosf *= 1.000;
-	      else if(fabs(lepeta) <  1.2) isosf *= 1.000;
-	      else if(fabs(lepeta) <  2.1) isosf *= 1.000;
-	      else if(fabs(lepeta) <  2.4) isosf *= 1.000;
-	    }
-	    else{
-	      if(fabs(lepeta) < 0.9) isosf *= 1.000;
-	      else if(fabs(lepeta) <  1.2) isosf *= 0.999;
-	      else if(fabs(lepeta) <  2.1) isosf *= 0.998;
-	      else if(fabs(lepeta) <  2.4) isosf *= 1.000;
-	    }
-	    
-	    //Cut-based ID scale factors from Clint Richardson https://indico.cern.ch/event/459111/contribution/1/attachments/1180755/1709309/B2G_Meeting_11.03.2015.pdf
-	    if(lepeta >= -2.4 && lepeta < -2.1){
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9812;
-	      else if(leppt < 60.) lepidsf *= 0.9793;
-	      else if(leppt < 100.) lepidsf *= 0.9600;
-	      else if(leppt < 1000.) lepidsf *= 0.9738;
-	    } 
-	    else if(lepeta < -1.2){
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9910;
-	      else if(leppt < 60.) lepidsf *= 0.9922;
-	      else if(leppt < 100.) lepidsf *= 0.9923;
-	      else if(leppt < 1000.) lepidsf *= 1.0039;
-	    }
-	    else if(lepeta < -0.9){ 
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9828;
-	      else if(leppt < 60.) lepidsf *= 0.9886;
-	      else if(leppt < 100.) lepidsf *= 0.9873;
-	      else if(leppt < 1000.) lepidsf *= 0.9876;
-	    }
-	    else if(lepeta < -0.4){ 
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9909;
-	      else if(leppt < 60.) lepidsf *= 0.9920; 
-	      else if(leppt < 100.) lepidsf *= 0.9854;
-	      else if(leppt < 1000.) lepidsf *= 0.9951;
-	    }
-	    else if(lepeta < 0.0){ 
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9878;
-	      else if(leppt < 60.) lepidsf *= 0.9874;
-	      else if(leppt < 100.) lepidsf *= 0.9885;
-	      else if(leppt < 1000.) lepidsf *= 0.9985;
-	    }
-	    else if(lepeta < 0.4){
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9847;
-	      else if(leppt < 60.) lepidsf *= 0.9877;
-	      else if(leppt < 100.) lepidsf *= 0.9896;
-	      else if(leppt < 1000.) lepidsf *= 1.0165;
-	    }
-	    else if(lepeta < 0.9){ 
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9869;
-	      else if(leppt < 60.) lepidsf *= 0.9898;
-	      else if(leppt < 100.) lepidsf *= 0.9875;
-	      else if(leppt < 1000.) lepidsf *= 0.9754;
-	    }
-	    else if(lepeta < 1.2){ 
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9724;
-	      else if(leppt < 60.) lepidsf *= 0.9746;
-	      else if(leppt < 100.) lepidsf *= 0.9696;
-	      else if(leppt < 1000.) lepidsf *= 0.9757;
-	    }
-	    else if(lepeta < 2.1){ 
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9929;
-	      else if(leppt < 60.) lepidsf *= 0.9947;
-	      else if(leppt < 100.) lepidsf *= 0.9929;
-	      else if(leppt < 1000.) lepidsf *= 0.9987;
-	    }
-	    else if(lepeta < 2.4){ 
-	      if(leppt > 30. && leppt < 40.) lepidsf *= 0.9818;
-	      else if(leppt < 60.) lepidsf *= 0.9851;
-	      else if(leppt < 100.) lepidsf *= 0.9724;
-	      else if(leppt < 1000.) lepidsf *= 1.0028;
-	    }
-	    else{lepidsf *=  1.0;} 
-	  }
-	}
+			//Mini-iso < 0.2 SFs from SUSY TWiki
+			if(leppt < 40){
+			  if(fabs(lepeta) < 0.9) isosf *= 1.000;
+			  else if(fabs(lepeta) <  1.2) isosf *= 1.000;
+			  else if(fabs(lepeta) <  2.1) isosf *= 0.999;
+			  else if(fabs(lepeta) <  2.4) isosf *= 0.999;
+			}
+			else if(leppt < 50){
+			  if(fabs(lepeta) < 0.9) isosf *= 1.000;
+			  else if(fabs(lepeta) <  1.2) isosf *= 1.000;
+			  else if(fabs(lepeta) <  2.1) isosf *= 0.999;
+			  else if(fabs(lepeta) <  2.4) isosf *= 1.000;
+			}
+			else if(leppt < 60){
+			  if(fabs(lepeta) < 0.9) isosf *= 1.000;
+			  else if(fabs(lepeta) <  1.2) isosf *= 1.000;
+			  else if(fabs(lepeta) <  2.1) isosf *= 1.000;
+			  else if(fabs(lepeta) <  2.4) isosf *= 1.000;
+			}
+			else{
+			  if(fabs(lepeta) < 0.9) isosf *= 1.000;
+			  else if(fabs(lepeta) <  1.2) isosf *= 0.999;
+			  else if(fabs(lepeta) <  2.1) isosf *= 0.998;
+			  else if(fabs(lepeta) <  2.4) isosf *= 1.000;
+			}
+		
+			//Cut-based ID scale factors from Clint Richardson https://indico.cern.ch/event/459111/contribution/1/attachments/1180755/1709309/B2G_Meeting_11.03.2015.pdf
+			if(lepeta >= -2.4 && lepeta < -2.1){
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9812;
+			  else if(leppt < 60.) lepidsf *= 0.9793;
+			  else if(leppt < 100.) lepidsf *= 0.9600;
+			  else if(leppt < 1000.) lepidsf *= 0.9738;
+			} 
+			else if(lepeta < -1.2){
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9910;
+			  else if(leppt < 60.) lepidsf *= 0.9922;
+			  else if(leppt < 100.) lepidsf *= 0.9923;
+			  else if(leppt < 1000.) lepidsf *= 1.0039;
+			}
+			else if(lepeta < -0.9){ 
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9828;
+			  else if(leppt < 60.) lepidsf *= 0.9886;
+			  else if(leppt < 100.) lepidsf *= 0.9873;
+			  else if(leppt < 1000.) lepidsf *= 0.9876;
+			}
+			else if(lepeta < -0.4){ 
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9909;
+			  else if(leppt < 60.) lepidsf *= 0.9920; 
+			  else if(leppt < 100.) lepidsf *= 0.9854;
+			  else if(leppt < 1000.) lepidsf *= 0.9951;
+			}
+			else if(lepeta < 0.0){ 
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9878;
+			  else if(leppt < 60.) lepidsf *= 0.9874;
+			  else if(leppt < 100.) lepidsf *= 0.9885;
+			  else if(leppt < 1000.) lepidsf *= 0.9985;
+			}
+			else if(lepeta < 0.4){
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9847;
+			  else if(leppt < 60.) lepidsf *= 0.9877;
+			  else if(leppt < 100.) lepidsf *= 0.9896;
+			  else if(leppt < 1000.) lepidsf *= 1.0165;
+			}
+			else if(lepeta < 0.9){ 
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9869;
+			  else if(leppt < 60.) lepidsf *= 0.9898;
+			  else if(leppt < 100.) lepidsf *= 0.9875;
+			  else if(leppt < 1000.) lepidsf *= 0.9754;
+			}
+			else if(lepeta < 1.2){ 
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9724;
+			  else if(leppt < 60.) lepidsf *= 0.9746;
+			  else if(leppt < 100.) lepidsf *= 0.9696;
+			  else if(leppt < 1000.) lepidsf *= 0.9757;
+			}
+			else if(lepeta < 2.1){ 
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9929;
+			  else if(leppt < 60.) lepidsf *= 0.9947;
+			  else if(leppt < 100.) lepidsf *= 0.9929;
+			  else if(leppt < 1000.) lepidsf *= 0.9987;
+			}
+			else if(lepeta < 2.4){ 
+			  if(leppt > 30. && leppt < 40.) lepidsf *= 0.9818;
+			  else if(leppt < 60.) lepidsf *= 0.9851;
+			  else if(leppt < 100.) lepidsf *= 0.9724;
+			  else if(leppt < 1000.) lepidsf *= 1.0028;
+			}
+			else{lepidsf *=  1.0;} 
+		  }
+		}
+		
+		isPastTrig = 1;
+		isPastTrigAlt = 1; 
       }
-	                
+      else{ //Data triggers check
+      	
+      	for(unsigned int itrig=0; itrig < vsSelTriggersEl_singleLepCalc->size(); itrig++){
+      		if(viSelTriggersEl_singleLepCalc->at(itrig) > 0) std::cout << "pass trigger : " << vsSelTriggersEl_singleLepCalc->at(itrig) << endl;
+      		}
+      	
+        if(isEEE){
+		  for(unsigned int itrig=0; itrig < vsSelTriggersEl_singleLepCalc->size(); itrig++){
+			if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1" || vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v2" || vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v3" || vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v4") && viSelTriggersEl_singleLepCalc->at(itrig) > 0) isPastTrig = 1;
+	  		}
+	  	}
+   		if(isEEM){
+		  for(unsigned int itrig=0; itrig < vsSelTriggersEl_singleLepCalc->size(); itrig++){
+			if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1" || vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v2" || vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v3" || vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v4") && viSelTriggersEl_singleLepCalc->at(itrig) > 0) isPastTrig = 1;
+	  		}
+	  	}
+   		if(isEMM){
+		  for(unsigned int itrig=0; itrig < vsSelTriggersMu_singleLepCalc->size(); itrig++){
+			if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1" || vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v2" || vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v3" || vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v4") && viSelTriggersMu_singleLepCalc->at(itrig) > 0) isPastTrig = 1;
+	  		}
+	  	}
+   		if(isMMM){
+		  for(unsigned int itrig=0; itrig < vsSelTriggersMu_singleLepCalc->size(); itrig++){
+			if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_TripleMu_12_10_5_v1" || vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_TripleMu_12_10_5_v2" || vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_TripleMu_12_10_5_v3" || vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_TripleMu_12_10_5_v4") && viSelTriggersMu_singleLepCalc->at(itrig) > 0) isPastTrig = 1;
+	  		}
+	  	}
+
+      	isPastTrigMC = 1;
+		isPastTrigMCAlt = 1; 
+
+      }
+      
+      if(isPastTrig) npass_trigger+=1;
+
+               
       float st = ht + corr_met_singleLepCalc;
       for(unsigned int ilep = 0; ilep < TightLeptonPt_PtOrdered.size(); ilep++){
 		st += TightLeptonPt_PtOrdered.at(ilep);
@@ -1461,6 +1533,11 @@ void step1::Loop()
       TrigEffWeight         = (float) TrigEff;
       isoSF                 = (float) isosf;
       lepIdSF               = (float) lepidsf;
+      MCPastTrigger         = (int)   isPastTrigMC;
+      MCPastTriggerAlt      = (int)   isPastTrigMCAlt;
+      DataPastTrigger       = (int)   isPastTrig;
+      DataPastTriggerAlt    = (int)   isPastTrigAlt;
+       
       
       genTopPt       = (float) gen_tpt;
       genAntiTopPt   = (float) gen_anti_tpt;
@@ -1470,6 +1547,7 @@ void step1::Loop()
 
       outputTree->Fill();
    }
+   std::cout<<"Npassed_Trigger(DATA)  = "<<npass_trigger<<" / "<<nentries<<std::endl;
    std::cout<<"Npassed_MET            = "<<npass_met<<" / "<<nentries<<std::endl;
    std::cout<<"Npassed_nJets          = "<<npass_njets<<" / "<<nentries<<std::endl;
    std::cout<<"Npassed_JetLeadPt      = "<<npass_JetLeadPt<<" / "<<nentries<<std::endl;
