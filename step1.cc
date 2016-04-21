@@ -184,6 +184,11 @@ void step1::Loop()
    float topPtWeightPast400;
    float topPtWeightHighPt;
    float minDR_leadAK8otherAK8;
+   std::vector<float> deltaR_lep1Jets;
+   std::vector<float> deltaR_lep2Jets;
+   std::vector<float> deltaR_lep3Jets;
+   std::vector<float> deltaR_lepClosestJet;
+   std::vector<float> PtRelLepClosestJet;
    float JetSF_pTNbwflat;
    float JetSFup_pTNbwflat;
    float JetSFdn_pTNbwflat;
@@ -325,11 +330,18 @@ void step1::Loop()
    outputTree->Branch("topPtWeight",&topPtWeight,"topPtWeight/F");
    outputTree->Branch("topPtWeightPast400",&topPtWeightPast400,"topPtWeightPast400/F");
    outputTree->Branch("topPtWeightHighPt",&topPtWeightHighPt,"topPtWeightHighPt/F");
+   
+   outputTree->Branch("deltaR_lep1Jets",&deltaR_lep1Jets);
+   outputTree->Branch("deltaR_lep2Jets",&deltaR_lep2Jets);
+   outputTree->Branch("deltaR_lep3Jets",&deltaR_lep3Jets);
+   outputTree->Branch("deltaR_lepClosestJet",&deltaR_lepClosestJet);
+   outputTree->Branch("PtRelLepClosestJet",&PtRelLepClosestJet);
+
 
    TLorentzVector jet_lv;
    TLorentzVector bjet_lv;
    TLorentzVector wjet1_lv;
-   TLorentzVector lepton1_lv,lepton2_lv,lepton3_lv;
+   std::vector<TLorentzVector> lepton_lv;
    TLorentzVector ak8_lv;
    
    // basic cuts
@@ -1240,9 +1252,31 @@ void step1::Loop()
       	theJetAK8NjettinessTau2_JetSubCalc_PtOrdered.push_back(theJetAK8NjettinessTau2_JetSubCalc->at(jetak8ptindpair[ijet].second));
       	theJetAK8NjettinessTau3_JetSubCalc_PtOrdered.push_back(theJetAK8NjettinessTau3_JetSubCalc->at(jetak8ptindpair[ijet].second));
       }
+      
+      
+      double lepM;
+      TLorentzVector lv_temp;
+      if(AllLeptonPt_PtOrdered.size()<3) std::cout << "Trilepton cut fail!! will segfault when setting lepton_lv 123!!" << std::endl;
+      for (unsigned int ilep=0; ilep < 3 ; ilep++){
+//       	std::cout << "AllLeptonPt_PtOrdered.size() : " << AllLeptonPt_PtOrdered.size() << std::endl;
+//       	std::cout << "ilep : " << ilep << " AllLeptonPt_PtOrdered : " << AllLeptonPt_PtOrdered.at(ilep) << std::endl;
+      	lepM = ( AllLeptonFlavor_PtOrdered[ilep]==0? 0.00051099891:0.105658367);
+      	lv_temp.SetPtEtaPhiM(AllLeptonPt_PtOrdered.at(ilep),AllLeptonEta_PtOrdered.at(ilep),AllLeptonPhi_PtOrdered.at(ilep),lepM);
+      	lepton_lv.push_back(lv_temp);
+//       	std::cout << "lep " << ilep+1 << " , flavor :" <<  AllLeptonFlavor_PtOrdered[ilep] << " , pt : " <<AllLeptonPt_PtOrdered.at(ilep) << " ,  eta : "<<AllLeptonEta_PtOrdered.at(ilep) << " , phi : "<<AllLeptonPhi_PtOrdered.at(ilep) << " , mass : " << lepM << std::endl;
+      }
 
       int   nbtagWithSF = 0;
       float leadBJetPt = 0;
+      float mindeltar1 = 1e8;
+      float mindeltar2 = 1e8;
+      float mindeltar3 = 1e8;
+      float ptrel_lep1closestjet = -99;
+      float ptrel_lep2closestjet = -99;
+      float ptrel_lep3closestjet = -99;
+      deltaR_lep1Jets.clear();
+      deltaR_lep2Jets.clear();
+      deltaR_lep3Jets.clear();
 
       for(unsigned int ijet=0; ijet < theJetPt_JetSubCalc_PtOrdered.size(); ijet++){
         jet_lv.SetPtEtaPhiE(theJetPt_JetSubCalc_PtOrdered.at(ijet),theJetEta_JetSubCalc_PtOrdered.at(ijet),theJetPhi_JetSubCalc_PtOrdered.at(ijet),theJetEnergy_JetSubCalc_PtOrdered.at(ijet));
@@ -1250,6 +1284,30 @@ void step1::Loop()
 		  nbtagWithSF += 1;
 		  if(theJetPt_JetSubCalc_PtOrdered.at(ijet) > leadBJetPt) leadBJetPt = theJetPt_JetSubCalc_PtOrdered.at(ijet);
 		}
+		deltaR_lep1Jets.push_back(lepton_lv.at(0).DeltaR(jet_lv));
+		deltaR_lep2Jets.push_back(lepton_lv.at(1).DeltaR(jet_lv));
+		deltaR_lep3Jets.push_back(lepton_lv.at(2).DeltaR(jet_lv));
+		if(deltaR_lep1Jets[ijet] < mindeltar1) {
+// 		  std::cout<< "pre mindeltar1 = " << mindeltar1 << std::endl;		
+		  mindeltar1 = deltaR_lep1Jets[ijet];
+// 		  std::cout<< "post mindeltar1 = " << mindeltar1 << std::endl;
+		  ptrel_lep1closestjet = lepton_lv.at(0).P()*(jet_lv.Vect().Cross(lepton_lv.at(0).Vect()).Mag()/jet_lv.P()/lepton_lv.at(0).P());
+		  
+		}
+		if(deltaR_lep2Jets[ijet] < mindeltar2) {
+// 		  std::cout<< "pre mindeltar2 = " << mindeltar2 << std::endl;		
+		  mindeltar2 = deltaR_lep2Jets[ijet];
+// 		  std::cout<< "post mindeltar2 = " << mindeltar2 << std::endl;
+		  ptrel_lep2closestjet = lepton_lv.at(1).P()*(jet_lv.Vect().Cross(lepton_lv.at(1).Vect()).Mag()/jet_lv.P()/lepton_lv.at(1).P());
+		}
+		if(deltaR_lep3Jets[ijet] < mindeltar3) {
+// 		  std::cout<< "pre mindeltar3 = " << mindeltar3 << std::endl;		
+		  mindeltar3 = deltaR_lep3Jets[ijet];
+// 		  std::cout<< "post mindeltar3 = " << mindeltar3 << std::endl;		
+		  ptrel_lep3closestjet = lepton_lv.at(2).P()*(jet_lv.Vect().Cross(lepton_lv.at(2).Vect()).Mag()/jet_lv.P()/lepton_lv.at(2).P());
+		}
+
+      
       }
 
       //8TeV Top Pt Reweighting
@@ -1544,6 +1602,18 @@ void step1::Loop()
       topPtWeight    = (float) weight_toppt;
       topPtWeightPast400    = (float) weightPast400_toppt;
       topPtWeightHighPt    = (float) weightHighPt_toppt;
+      
+      
+      deltaR_lepClosestJet.clear();
+      PtRelLepClosestJet.clear();
+      deltaR_lepClosestJet.push_back( (float) mindeltar1 );
+      deltaR_lepClosestJet.push_back( (float) mindeltar2 );
+      deltaR_lepClosestJet.push_back( (float) mindeltar3 );
+
+      PtRelLepClosestJet.push_back( (float) ptrel_lep1closestjet );
+      PtRelLepClosestJet.push_back( (float) ptrel_lep2closestjet );
+      PtRelLepClosestJet.push_back( (float) ptrel_lep3closestjet );
+
 
       outputTree->Fill();
    }
