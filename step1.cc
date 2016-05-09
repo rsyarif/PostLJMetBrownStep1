@@ -11,7 +11,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "fakerate_3lep_rizki.h" //added by rizki
+// #include "fakerate_3lep_rizki.h" //added by rizki
+#include "fakerate_3lep_ptEta_rizki.h" //added by rizki
+
 
 using namespace std;
 
@@ -692,27 +694,39 @@ void step1::Loop()
       if(!isMC){
 			cout << " isEEE = "<< isEEE << ", isEEM = "<< isEEM << ", isEMM = "<<isEMM << ", isMMM = "<<isMMM << endl; 
 	
-			if(isEEE){
-				for(int imode=0;imode<nmodes;imode++){
-					bkgweights[imode] = GetWeight_eee(Nel, imode);
-				}
+			vector<double> lep1_info,lep2_info,lep3_info; //at(0): isE, at(1): isTight, at(2): pt, at(3): eta
+			lep1_info.push_back(AllLeptonFlavor_PtOrdered.at(0));lep1_info.push_back(AllLeptonIsTight_PtOrdered.at(0));lep1_info.push_back(AllLeptonPt_PtOrdered.at(0));lep1_info.push_back(AllLeptonEta_PtOrdered.at(0));
+			lep2_info.push_back(AllLeptonFlavor_PtOrdered.at(1));lep2_info.push_back(AllLeptonIsTight_PtOrdered.at(1));lep2_info.push_back(AllLeptonPt_PtOrdered.at(1));lep2_info.push_back(AllLeptonEta_PtOrdered.at(1));
+			lep3_info.push_back(AllLeptonFlavor_PtOrdered.at(2));lep3_info.push_back(AllLeptonIsTight_PtOrdered.at(2));lep3_info.push_back(AllLeptonPt_PtOrdered.at(2));lep3_info.push_back(AllLeptonEta_PtOrdered.at(2));
+			for(int imode=0;imode<nmodes;imode++){
+				bkgweights[imode] = GetWeight(imode, lep1_info, lep2_info, lep3_info);
 			}
-			else if(isMMM){
-				for(int imode=0;imode<nmodes;imode++){
-					bkgweights[imode] = GetWeight_mmm(Nmu, imode);
-				}
-			}
-			else if(isEEM){
-				for(int imode=0;imode<nmodes;imode++){
-					bkgweights[imode] = GetWeight_eem(Nel, Nmu, imode);
-				}
-			}
-			else if(isEMM){
-				for(int imode=0;imode<nmodes;imode++){
-					bkgweights[imode] = GetWeight_emm(Nel, Nmu, imode);
-				}
-			}
-			else{ cerr<<"Error! no combination of eee, eem, emm, mmm, so what the hell is it?"<<endl; assert(0);}
+			
+// 			if(isEEE){
+// 				for(int imode=0;imode<nmodes;imode++){
+// 					bkgweights[imode] = GetWeight_eee(Nel, imode);
+// // 					bkgweights[imode] = GetWeight(imode, lep1_info, lep2_info, lep3_info);
+// 				}
+// 			}
+// 			else if(isMMM){
+// 				for(int imode=0;imode<nmodes;imode++){
+// 					bkgweights[imode] = GetWeight_mmm(Nmu, imode);
+// // 					bkgweights[imode] = GetWeight(imode, lep1_info, lep2_info, lep3_info);
+// 				}
+// 			}
+// 			else if(isEEM){
+// 				for(int imode=0;imode<nmodes;imode++){
+// 					bkgweights[imode] = GetWeight_eem(Nel, Nmu, imode);
+// // 					bkgweights[imode] = GetWeight(imode, lep1_info, lep2_info, lep3_info);
+// 				}
+// 			}
+// 			else if(isEMM){
+// 				for(int imode=0;imode<nmodes;imode++){
+// 					bkgweights[imode] = GetWeight_emm(Nel, Nmu, imode);
+// // 					bkgweights[imode] = GetWeight(imode, lep1_info, lep2_info, lep3_info);
+// 				}
+// 			}
+// 			else{ cerr<<"Error! no combination of eee, eem, emm, mmm, so what the hell is it?"<<endl; assert(0);}
 		}//end make background weights.
 // 		if(printlevel >=3){ 
 			for(int imode=0;imode<nmodes;imode++)cout << "bkgweights["<<imode<<"] ="<< bkgweights[imode]<<endl;	
