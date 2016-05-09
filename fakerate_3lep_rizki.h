@@ -80,16 +80,28 @@ double Weee_lll(int mode);
 /////////////////////////////
 
 //from AN-15-148 v4 sections 5.2.1 and 5.2.2; see Figure 12 for evidence that the fake rates are pt independent. 
-float Pe(int mode){return 0.87 + uPe()*peModeBehavior(mode);}  //ele prompt rate
+float Pe(int mode){
+// 	std::cout << "Ele: Mode: " << mode << ", " << peModeBehavior(mode) << " * uPr: " << uPe()<< endl;
+	return 0.87 + uPe()*peModeBehavior(mode);
+	}  //ele prompt rate
 inline float uPe(){return 0.005;}  //ele prompt rate
 
-float Fe(int mode){return 0.3305 + uFm()*fmModeBehavior(mode);} //ele fake rate //El pt inclusive fake rate = 33.0531% +/- 0.173866 %
+float Fe(int mode){
+// 	std::cout << "Ele: Mode: " << mode << ", " << feModeBehavior(mode) << " * uFr: " << uFe()<< endl;
+	return 0.3305 + uFe()*feModeBehavior(mode);
+	} //ele fake rate //El pt inclusive fake rate = 33.0531% +/- 0.173866 %
 inline float uFe(){return 0.017;} //ele fake rate = 0.663 +- 0.009
 
-float Pm(int mode){return 0.9836 + uPm()*pmModeBehavior(mode);} //mu prompt rate
+float Pm(int mode){
+// 	std::cout << "Mu: Mode: " << mode << ", " << pmModeBehavior(mode) << " * uPr: " << uPm()<< endl;
+	return 0.9836 + uPm()*pmModeBehavior(mode);
+	} //mu prompt rate
 inline float uPm(){return 0.0003;}  //muon prompt rate
 
-float Fm(int mode){return 0.4673 + uFe()*feModeBehavior(mode);} //mu fake rate //Mu pt inclusive fake rate = 46.7348% +/- 0.159149 %
+float Fm(int mode){
+// 	std::cout << "Mu: Mode: " << mode << ", " << fmModeBehavior(mode) << " * uFr: " << uFm()<< endl;
+	return 0.4673 + uFm()*fmModeBehavior(mode);
+	} //mu fake rate //Mu pt inclusive fake rate = 46.7348% +/- 0.159149 %
 inline float uFm(){return 0.0016;} //muon fake rate= 0.887 +- 0.005
 
 inline float uQe(){return 0.30;}//percent
