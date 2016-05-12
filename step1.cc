@@ -208,12 +208,14 @@ void step1::Loop()
    std::vector<float> AllLeptonMiniIso_PtOrdered;
    std::vector<int> AllLeptonFlavor_PtOrdered;
    std::vector<int> AllLeptonIsTight_PtOrdered;
+   std::vector<int> AllLeptonCharge_PtOrdered;
    std::vector<float> TightLeptonPt_PtOrdered;
    std::vector<float> TightLeptonEta_PtOrdered;
    std::vector<float> TightLeptonPhi_PtOrdered;
    std::vector<float> TightLeptonEnergy_PtOrdered;
    std::vector<float> TightLeptonMiniIso_PtOrdered;
    std::vector<int> TightLeptonFlavor_PtOrdered;
+   std::vector<int> TightLeptonCharge_PtOrdered;
    std::vector<int> theJetBTagBuggy_JetSubCalc_PtOrdered;
    std::vector<int> theJetAK8Wmatch_JetSubCalc_PtOrdered;
    std::vector<int> NJetsWtagged_0p6_shifts;
@@ -260,6 +262,7 @@ void step1::Loop()
    outputTree->Branch("AllLeptonMiniIso_PtOrdered",&AllLeptonMiniIso_PtOrdered);
    outputTree->Branch("AllLeptonFlavor_PtOrdered",&AllLeptonFlavor_PtOrdered);
    outputTree->Branch("AllLeptonIsTight_PtOrdered",&AllLeptonIsTight_PtOrdered);
+   outputTree->Branch("AllLeptonCharge_PtOrdered",&AllLeptonCharge_PtOrdered);
 
    outputTree->Branch("TightLeptonPt_PtOrdered",&TightLeptonPt_PtOrdered);
    outputTree->Branch("TightLeptonEta_PtOrdered",&TightLeptonEta_PtOrdered);
@@ -267,6 +270,7 @@ void step1::Loop()
    outputTree->Branch("TightLeptonEnergy_PtOrdered",&TightLeptonEnergy_PtOrdered);
    outputTree->Branch("TightLeptonMiniIso_PtOrdered",&TightLeptonMiniIso_PtOrdered);
    outputTree->Branch("TightLeptonFlavor_PtOrdered",&TightLeptonFlavor_PtOrdered);
+   outputTree->Branch("TightLeptonCharge_PtOrdered",&TightLeptonCharge_PtOrdered);
 
    outputTree->Branch("theJetPt_JetSubCalc_PtOrdered",&theJetPt_JetSubCalc_PtOrdered);
    outputTree->Branch("theJetEta_JetSubCalc_PtOrdered",&theJetEta_JetSubCalc_PtOrdered);
@@ -499,6 +503,7 @@ void step1::Loop()
       std::vector<double> TightLeptonEnergy;
       std::vector<double> TightLeptonMiniIso;
       std::vector<int> TightLeptonFlavor; // 0 - electron, 1 - muon
+      std::vector<int> TightLeptonCharge; // 0 - electron, 1 - muon
       std::vector<pair<double,int>> tightlepptindpair;      
 
       std::vector<double> LooseNotTightLeptonPt;
@@ -507,6 +512,7 @@ void step1::Loop()
       std::vector<double> LooseNotTightLeptonEnergy;
       std::vector<double> LooseNotTightLeptonMiniIso;
       std::vector<int> LooseNotTightLeptonFlavor; // 0 - electron, 1 - muon
+      std::vector<int> LooseNotTightLeptonCharge; // 0 - electron, 1 - muon
       std::vector<pair<double,int>> loosenottightlepptindpair;      
 
       std::vector<double> AllLeptonPt;
@@ -516,6 +522,7 @@ void step1::Loop()
       std::vector<double> AllLeptonMiniIso;
       std::vector<int> AllLeptonFlavor; // 0 - electron, 1 - muon
       std::vector<int> AllLeptonIsTight; 
+      std::vector<int> AllLeptonCharge;       
       std::vector<pair<double,int>> alllepptindpair;
 
       int tightlepindex = 0;
@@ -538,6 +545,7 @@ void step1::Loop()
 		  TightLeptonEnergy.push_back(elEnergy_singleLepCalc->at(iel));
 		  TightLeptonMiniIso.push_back(elMiniIso_singleLepCalc->at(iel));
 		  TightLeptonFlavor.push_back(0);
+		  TightLeptonCharge.push_back(elCharge_singleLepCalc->at(iel));
 
 		  tightlepptindpair.push_back(std::make_pair(elPt_singleLepCalc->at(iel),tightlepindex));
 		  tightlepindex++;
@@ -549,6 +557,7 @@ void step1::Loop()
 		  LooseNotTightLeptonEnergy.push_back(elEnergy_singleLepCalc->at(iel));
 		  LooseNotTightLeptonMiniIso.push_back(elMiniIso_singleLepCalc->at(iel));
 		  LooseNotTightLeptonFlavor.push_back(0);
+		  LooseNotTightLeptonCharge.push_back(elCharge_singleLepCalc->at(iel));
 
 		  loosenottightlepptindpair.push_back(std::make_pair(elPt_singleLepCalc->at(iel),loosenottightlepindex));
 		  loosenottightlepindex++;
@@ -569,6 +578,7 @@ void step1::Loop()
 		  TightLeptonEnergy.push_back(muEnergy_singleLepCalc->at(imu));
 		  TightLeptonMiniIso.push_back(muMiniIso_singleLepCalc->at(imu));
 		  TightLeptonFlavor.push_back(1);
+		  TightLeptonCharge.push_back(muCharge_singleLepCalc->at(imu));
 
 		  tightlepptindpair.push_back(std::make_pair(muPt_singleLepCalc->at(imu),tightlepindex));
 		  tightlepindex++;
@@ -581,7 +591,8 @@ void step1::Loop()
 		  LooseNotTightLeptonEnergy.push_back(muEnergy_singleLepCalc->at(imu));
 		  LooseNotTightLeptonMiniIso.push_back(muMiniIso_singleLepCalc->at(imu));
 		  LooseNotTightLeptonFlavor.push_back(1);
-
+		  LooseNotTightLeptonCharge.push_back(muCharge_singleLepCalc->at(imu));
+		  
 		  loosenottightlepptindpair.push_back(std::make_pair(muPt_singleLepCalc->at(imu),loosenottightlepindex));
 		  loosenottightlepindex++;
 		}
@@ -600,6 +611,7 @@ void step1::Loop()
       AllLeptonMiniIso_PtOrdered.clear();
       AllLeptonFlavor_PtOrdered.clear();
       AllLeptonIsTight_PtOrdered.clear();      
+      AllLeptonCharge_PtOrdered.clear();      
 
       //Pt ordering - for Tight leptons - then add to All leptons list/vector
       int Nel = 0;
@@ -611,6 +623,7 @@ void step1::Loop()
       TightLeptonEnergy_PtOrdered.clear();
       TightLeptonMiniIso_PtOrdered.clear();
       TightLeptonFlavor_PtOrdered.clear();
+      TightLeptonCharge_PtOrdered.clear();
       for(unsigned int ilep=0; ilep < tightlepptindpair.size(); ilep++){
       	TightLeptonPt_PtOrdered.push_back(TightLeptonPt.at(tightlepptindpair[ilep].second));
       	TightLeptonEta_PtOrdered.push_back(TightLeptonEta.at(tightlepptindpair[ilep].second));
@@ -618,6 +631,7 @@ void step1::Loop()
       	TightLeptonEnergy_PtOrdered.push_back(TightLeptonEnergy.at(tightlepptindpair[ilep].second));
       	TightLeptonMiniIso_PtOrdered.push_back(TightLeptonMiniIso.at(tightlepptindpair[ilep].second));
       	TightLeptonFlavor_PtOrdered.push_back(TightLeptonFlavor.at(tightlepptindpair[ilep].second));
+      	TightLeptonCharge_PtOrdered.push_back(TightLeptonCharge.at(tightlepptindpair[ilep].second));
 
 		if(ilep < 3){
 		  if(TightLeptonFlavor.at(tightlepptindpair[ilep].second) == 0) Nel++;
@@ -632,7 +646,7 @@ void step1::Loop()
       	AllLeptonMiniIso_PtOrdered.push_back(TightLeptonMiniIso.at(tightlepptindpair[ilep].second));
       	AllLeptonFlavor_PtOrdered.push_back(TightLeptonFlavor.at(tightlepptindpair[ilep].second));
       	AllLeptonIsTight_PtOrdered.push_back(1);
-				
+      	AllLeptonCharge_PtOrdered.push_back(TightLeptonCharge.at(tightlepptindpair[ilep].second));				
       }           
 
       //Pt ordering - for Loose Not Tight - then append to All leptons list/vector
@@ -647,6 +661,7 @@ void step1::Loop()
       	AllLeptonMiniIso_PtOrdered.push_back(LooseNotTightLeptonMiniIso.at(loosenottightlepptindpair[ilep].second));
       	AllLeptonFlavor_PtOrdered.push_back(LooseNotTightLeptonFlavor.at(loosenottightlepptindpair[ilep].second));
       	AllLeptonIsTight_PtOrdered.push_back(0);
+      	AllLeptonCharge_PtOrdered.push_back(LooseNotTightLeptonCharge.at(loosenottightlepptindpair[ilep].second));
 				
       }           
       
@@ -657,7 +672,7 @@ void step1::Loop()
       		if(AllLeptonFlavor_PtOrdered.at(ilep)==0) Nel_top3_all++;
       		if(AllLeptonFlavor_PtOrdered.at(ilep)==1) Nmu_top3_all++;
       	}
-      	std::cout<< "ilep = " << ilep << ", flavor = " << AllLeptonFlavor_PtOrdered.at(ilep) << ", pT = "<< AllLeptonPt_PtOrdered.at(ilep)  <<", isTight = " << AllLeptonIsTight_PtOrdered.at(ilep) << endl; 
+      	std::cout<< "ilep = " << ilep << ", flavor = " << AllLeptonFlavor_PtOrdered.at(ilep) << ", charge = " << AllLeptonCharge_PtOrdered.at(ilep) << ", pT = "<< AllLeptonPt_PtOrdered.at(ilep)  <<", isTight = " << AllLeptonIsTight_PtOrdered.at(ilep) << endl; 
       }
 
       
