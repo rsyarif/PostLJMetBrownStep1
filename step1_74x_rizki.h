@@ -993,7 +993,7 @@ step1::step1(TString inputFileName, TString outputFileName) : inputTree(0), inpu
   isSig  = inputFileName.Contains("prime") || inputFileName.Contains("X53");
   isMadgraphBkg = inputFileName.Contains("WJetsToLNu_HT") || inputFileName.Contains("QCD");
   isTOP = (inputFileName.Contains("Mtt") || inputFileName.Contains("ST") || inputFileName.Contains("TTZ_") || inputFileName.Contains("TTW_") || inputFileName.Contains("TT_Tune"));
-  isMC      = !inputFileName.Contains("Electron") && !inputFileName.Contains("Muon")  ;
+  isMC      = !inputFileName.Contains("DoubleEG") && !inputFileName.Contains("Muon")  ;
   isTTincMtt0to700    = outputFileName.Contains("Mtt0to700");
   isTTincMtt700to1000 = outputFileName.Contains("Mtt700to1000");
   isTTincMtt1000toInf = outputFileName.Contains("Mtt1000toInf");
