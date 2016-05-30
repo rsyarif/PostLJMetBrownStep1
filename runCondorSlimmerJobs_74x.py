@@ -11,8 +11,8 @@ shift = sys.argv[1]
 
 relbase = '/uscms_data/d3/rsyarif/Spring2016/TprimeAnalysis_BrownFrameWork/CMSSW_7_6_3/'
 inputDir='/eos/uscms/store/user/lpcljm/LJMet_3lep_122115/'+shift+'/'
-outputDir='/eos/uscms/store/user/lpcljm/LJMet_3lep_122115_step1/'+shift+'/'
-condorDir='/uscms_data/d3/rsyarif/Spring2016/TprimeAnalysis_BrownFrameWork/LJMet_3lep_122115_step1/'+shift+'/'
+outputDir='/eos/uscms/store/user/lpcljm/LJMet_3lep_122115_step1_v2/'+shift+'/'
+condorDir='/uscms_data/d3/rsyarif/Spring2016/TprimeAnalysis_BrownFrameWork/LJMet_3lep_122115_step1_v2/'+shift+'/'
 
 runDir=os.getcwd()
 # Can change the file directory if needed
@@ -74,7 +74,7 @@ universe = vanilla
 Executable = %(RUNDIR)s/makeStep1.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
-Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
+Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_ptEta_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
 Output = %(FILENAME)s_%(LABEL)s.out
 Error = %(FILENAME)s_%(LABEL)s.err
 Log = %(FILENAME)s_%(LABEL)s.log
@@ -126,7 +126,7 @@ Queue 1"""%dict)
 # Executable = %(RUNDIR)s/makeStep1.sh
 # Should_Transfer_Files = YES
 # WhenToTransferOutput = ON_EXIT
-# Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
+# Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_ptEta_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
 # Output = %(FILENAME)s_%(LABEL)s.out
 # Error = %(FILENAME)s_%(LABEL)s.err
 # Log = %(FILENAME)s_%(LABEL)s.log
@@ -229,7 +229,7 @@ universe = vanilla
 Executable = %(RUNDIR)s/makeStep1.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
-Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
+Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_ptEta_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
 Output = %(FILENAME)s.out
 Error = %(FILENAME)s.err
 Log = %(FILENAME)s.log
@@ -266,7 +266,7 @@ universe = vanilla
 Executable = %(RUNDIR)s/makeStep1.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
-Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
+Transfer_Input_Files = %(RUNDIR)s/makeStep1.C, %(RUNDIR)s/%(POST)s/step1.cc, %(RUNDIR)s/%(POST)s/step1.h, %(RUNDIR)s/%(POST)s/step1_cc.d, %(RUNDIR)s/%(POST)s/step1_cc.so, %(RUNDIR)s/%(POST)s/fakerate_3lep_ptEta_rizki.h, %(RUNDIR)s/%(POST)s/CMSStyle.C, %(RUNDIR)s/%(POST)s/utilities.h, %(RUNDIR)s/%(POST)s/stringmap.h, %(RUNDIR)s/csc2015_Dec01.txt, %(RUNDIR)s/ecalscn1043093_Dec01.txt
 Output = %(FILENAME)s_%(LABEL)s.out
 Error = %(FILENAME)s_%(LABEL)s.err
 Log = %(FILENAME)s_%(LABEL)s.log
