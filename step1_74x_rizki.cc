@@ -134,6 +134,12 @@ void step1::Loop()
    inputTree->SetBranchStatus("theJetEnergy_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetCSV_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetBTag_JetSubCalc",1);
+// new format
+//    inputTree->SetBranchStatus("theJetBTag_bSFup_JetSubCalc",1);
+//    inputTree->SetBranchStatus("theJetBTag_bSFdn_JetSubCalc",1);
+//    inputTree->SetBranchStatus("theJetBTag_lSFup_JetSubCalc",1);
+//    inputTree->SetBranchStatus("theJetBTag_lSFdn_JetSubCalc",1);
+
    inputTree->SetBranchStatus("theJetAK8Pt_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8Eta_JetSubCalc",1);
    inputTree->SetBranchStatus("theJetAK8Phi_JetSubCalc",1);
@@ -303,6 +309,12 @@ void step1::Loop()
    outputTree->Branch("theJetPhi_JetSubCalc_PtOrdered",&theJetPhi_JetSubCalc_PtOrdered);
    outputTree->Branch("theJetEnergy_JetSubCalc_PtOrdered",&theJetEnergy_JetSubCalc_PtOrdered);
    outputTree->Branch("theJetBTag_JetSubCalc_PtOrdered",&theJetBTag_JetSubCalc_PtOrdered);
+//new format
+//    outputTree->Branch("theJetBTag_bSFup_JetSubCalc_PtOrdered",&theJetBTag_bSFup_JetSubCalc_PtOrdered);
+//    outputTree->Branch("theJetBTag_bSFdn_JetSubCalc_PtOrdered",&theJetBTag_bSFdn_JetSubCalc_PtOrdered);
+//    outputTree->Branch("theJetBTag_lSFup_JetSubCalc_PtOrdered",&theJetBTag_lSFup_JetSubCalc_PtOrdered);
+//    outputTree->Branch("theJetBTag_lSFdn_JetSubCalc_PtOrdered",&theJetBTag_lSFdn_JetSubCalc_PtOrdered);
+   
    outputTree->Branch("theJetBTagBuggy_JetSubCalc_PtOrdered",&theJetBTagBuggy_JetSubCalc_PtOrdered);
    outputTree->Branch("BJetLeadPtWithSF_JetSubCalc",&BJetLeadPtWithSF_JetSubCalc,"BJetLeadPtWithSF_JetSubCalc/F");
    outputTree->Branch("AK4HTpMETpLepPt",&AK4HTpMETpLepPt,"AK4HTpMETpLepPt/F");
@@ -381,6 +393,7 @@ void step1::Loop()
    
    // basic cuts
    float metCut=0;
+   float jetEtaCut=2.4;
    int   njetsCut=0;
    float JetLeadPtCut=0;
    float JetSubLeadPtCut=0;
@@ -823,108 +836,114 @@ void step1::Loop()
       std::vector<int> theJetBTagBuggy;
 
       for(unsigned int ijet=0; ijet < theJetPt_JetSubCalc->size(); ijet++){
+      	
+      	fabs(theJetEta_JetSubCalc->at(ijet)) > jetEtaCut) continue; //IS this needed??
+		
+		// Not needed for new LJMet ntuples - start
+		/// FIX THE MISTAGS -- value in theJetBTag is correct if flavor is 4/5
+		theJetBTagBuggy.push_back(theJetBTag_JetSubCalc->at(ijet));
 
-	/// FIX THE MISTAGS -- value in theJetBTag is correct if flavor is 4/5
-	theJetBTagBuggy.push_back(theJetBTag_JetSubCalc->at(ijet));
+		if(isMC && AK4JetFlav_singleLepCalc->at(ijet) != 4 && AK4JetFlav_singleLepCalc->at(ijet) != 5){
+		  double mistagSF = 1.0;
 
-	if(isMC && AK4JetFlav_singleLepCalc->at(ijet) != 4 && AK4JetFlav_singleLepCalc->at(ijet) != 5){
-	  double mistagSF = 1.0;
-
-	  if(MistagSFup) mistagSF = 1.34022; // up
-	  else if(MistagSFdn) mistagSF = 0.94022; // down
-	  else mistagSF = 1.14022; // central
+		  if(MistagSFup) mistagSF = 1.34022; // up
+		  else if(MistagSFdn) mistagSF = 0.94022; // down
+		  else mistagSF = 1.14022; // central
  
-	  double mistageff = 0.0;
-	  double pt = theJetPt_JetSubCalc->at(ijet);
-	  if(pt < 20) mistageff = 0.003402;
-	  else if(pt < 40) mistageff = 0.008067;
-	  else if(pt < 60) mistageff = 0.006980;
-	  else if(pt < 80) mistageff = 0.006316;
-	  else if(pt < 100) mistageff = 0.006713;
-	  else if(pt < 115) mistageff = 0.006598;
-	  else if(pt < 400) mistageff = -0.00242504 + 9.15452e-05*pt - 9.63553e-08*pt*pt;
-	  else mistageff = 0.0134038 + 1.24358e-05*pt;
+		  double mistageff = 0.0;
+		  double pt = theJetPt_JetSubCalc->at(ijet);
+		  if(pt < 20) mistageff = 0.003402;
+		  else if(pt < 40) mistageff = 0.008067;
+		  else if(pt < 60) mistageff = 0.006980;
+		  else if(pt < 80) mistageff = 0.006316;
+		  else if(pt < 100) mistageff = 0.006713;
+		  else if(pt < 115) mistageff = 0.006598;
+		  else if(pt < 400) mistageff = -0.00242504 + 9.15452e-05*pt - 9.63553e-08*pt*pt;
+		  else mistageff = 0.0134038 + 1.24358e-05*pt;
 
-	  bool isBTagged = (theJetCSV_JetSubCalc->at(ijet) > 0.890);
-	  bool newBTag = isBTagged;
+		  bool isBTagged = (theJetCSV_JetSubCalc->at(ijet) > 0.890);
+		  bool newBTag = isBTagged;
 
-	  //throw die
-	  float coin = gRandom->Uniform(1.);    
+		  //throw die
+		  float coin = gRandom->Uniform(1.);    
   
-	  if(mistagSF > 1){  // use this if SF>1
-	    if( !isBTagged ) {
+		  if(mistagSF > 1){  // use this if SF>1
+			if( !isBTagged ) {
 
-	      //fraction of jets that need to be upgraded
-	      float mistagPercent = (1.0 - mistagSF) / (1.0 - (mistagSF/mistageff) );
+			  //fraction of jets that need to be upgraded
+			  float mistagPercent = (1.0 - mistagSF) / (1.0 - (mistagSF/mistageff) );
 
-	      //upgrade to tagged
-	      if( coin < mistagPercent ) {newBTag = true;} // is was false before
-	    }	    
-	  }else{  // use this if SF<1
+			  //upgrade to tagged
+			  if( coin < mistagPercent ) {newBTag = true;} // is was false before
+			}	    
+		  }else{  // use this if SF<1
   
-	    //downgrade tagged to untagged
-	    if( isBTagged && coin > mistagSF ) {newBTag = false;} // it was true before
-	  }
-	  theJetBTag_JetSubCalc->at(ijet) =  newBTag;
-	}
+			//downgrade tagged to untagged
+			if( isBTagged && coin > mistagSF ) {newBTag = false;} // it was true before
+		  }
+		  theJetBTag_JetSubCalc->at(ijet) =  newBTag;
+		}
+		
+		// Not needed for new LJMet ntuples - end
 
-	AK4HTnoSF += theJetPt_JetSubCalc->at(ijet);
 
-	if(isMC){
-	  float one = 1.0;
-	    
-	  float jetpt = theJetPt_JetSubCalc->at(ijet);
-	  float jetsf = 1.09383 - 0.000477777*jetpt;
-	  float jetsferr = sqrt(0.00314541714554 + 2.18390370364e-08*jetpt*jetpt + 2*jetpt*(-7.85447860996e-06));
+		AK4HTnoSF += theJetPt_JetSubCalc->at(ijet);
+
+		if(isMC){
+		  float one = 1.0;
+		
+		  float jetpt = theJetPt_JetSubCalc->at(ijet);
+		  float jetsf = 1.09383 - 0.000477777*jetpt;
+		  float jetsferr = sqrt(0.00314541714554 + 2.18390370364e-08*jetpt*jetpt + 2*jetpt*(-7.85447860996e-06));
 	  
-	  float wideup = min(one,max(float(0.747382 + 0.164524),jetsf+jetsferr));				    
-	  float widedn = min(one,max(jetsf-jetsferr,float(0.747382 - 0.164524)));
+		  float wideup = min(one,max(float(0.747382 + 0.164524),jetsf+jetsferr));				    
+		  float widedn = min(one,max(jetsf-jetsferr,float(0.747382 - 0.164524)));
 	  
-	  if(isTOP || isSig){
-	    if(jetpt >= 200){
-	      if(jetpt < 725){
-		JetSF_pTNbwflat *= min(one,jetsf);
-		JetSFup_pTNbwflat *= wideup;
-		JetSFdn_pTNbwflat *= widedn;
-		JetSFupwide_pTNbwflat *= wideup;
-		JetSFdnwide_pTNbwflat *= widedn;
-	      }else{
-		JetSF_pTNbwflat *= 0.747382;
-		JetSFup_pTNbwflat *= wideup;
-		JetSFdn_pTNbwflat *= widedn;
-		JetSFupwide_pTNbwflat *= wideup;
-		JetSFdnwide_pTNbwflat *= widedn;
-	      }
-	    }
-	  }else{
-	    jetsf = 1.24507 - 0.000664768*jetpt;
-	    jetsferr = sqrt(0.000506216376592 + 3.1532423475e-09*jetpt*jetpt + 2*jetpt*(-1.17981363543e-06));
-	    if(jetpt < 1020){
-	      JetSF_pTNbwflat *= min(one,jetsf);
-	      JetSFup_pTNbwflat *= min(one,max(jetsf+jetsferr,float(0.568135+0.0522921)));
-	      JetSFdn_pTNbwflat *= min(one,max(jetsf-jetsferr,float(0.568135-0.0522921)));
-	      JetSFupwide_pTNbwflat *= max(wideup,min(one,max(jetsf+jetsferr,float(0.568135+0.0522921))));
-	      JetSFdnwide_pTNbwflat *= min(widedn,min(one,max(jetsf-jetsferr,float(0.568135-0.0522921))));
-	    }else{
-	      JetSF_pTNbwflat *= 0.568135;
-	      JetSFup_pTNbwflat *= min(one,max(jetsf+jetsferr,float(0.568135+0.0522921)));
-	      JetSFdn_pTNbwflat *= min(one,max(jetsf-jetsferr,float(0.568135-0.0522921)));
-	      JetSFupwide_pTNbwflat *= max(wideup,min(one,max(jetsf+jetsferr,float(0.568135+0.0522921))));
-	      JetSFdnwide_pTNbwflat *= min(widedn,min(one,max(jetsf-jetsferr,float(0.568135-0.0522921))));
-	    }
-	  }
+		  if(isTOP || isSig){
+			if(jetpt >= 200){
+			  if(jetpt < 725){
+			JetSF_pTNbwflat *= min(one,jetsf);
+			JetSFup_pTNbwflat *= wideup;
+			JetSFdn_pTNbwflat *= widedn;
+			JetSFupwide_pTNbwflat *= wideup;
+			JetSFdnwide_pTNbwflat *= widedn;
+			  }else{
+			JetSF_pTNbwflat *= 0.747382;
+			JetSFup_pTNbwflat *= wideup;
+			JetSFdn_pTNbwflat *= widedn;
+			JetSFupwide_pTNbwflat *= wideup;
+			JetSFdnwide_pTNbwflat *= widedn;
+			  }
+			}
+		  }else{
+			jetsf = 1.24507 - 0.000664768*jetpt;
+			jetsferr = sqrt(0.000506216376592 + 3.1532423475e-09*jetpt*jetpt + 2*jetpt*(-1.17981363543e-06));
+			if(jetpt < 1020){
+			  JetSF_pTNbwflat *= min(one,jetsf);
+			  JetSFup_pTNbwflat *= min(one,max(jetsf+jetsferr,float(0.568135+0.0522921)));
+			  JetSFdn_pTNbwflat *= min(one,max(jetsf-jetsferr,float(0.568135-0.0522921)));
+			  JetSFupwide_pTNbwflat *= max(wideup,min(one,max(jetsf+jetsferr,float(0.568135+0.0522921))));
+			  JetSFdnwide_pTNbwflat *= min(widedn,min(one,max(jetsf-jetsferr,float(0.568135-0.0522921))));
+			}else{
+			  JetSF_pTNbwflat *= 0.568135;
+			  JetSFup_pTNbwflat *= min(one,max(jetsf+jetsferr,float(0.568135+0.0522921)));
+			  JetSFdn_pTNbwflat *= min(one,max(jetsf-jetsferr,float(0.568135-0.0522921)));
+			  JetSFupwide_pTNbwflat *= max(wideup,min(one,max(jetsf+jetsferr,float(0.568135+0.0522921))));
+			  JetSFdnwide_pTNbwflat *= min(widedn,min(one,max(jetsf-jetsferr,float(0.568135-0.0522921))));
+			}
+		  }
 	  
-	  jetptindpair.push_back(std::make_pair(theJetPt_JetSubCalc->at(ijet),ijet));
-	  njets+=1;
-	  ht+=theJetPt_JetSubCalc->at(ijet);
-	  if(theJetCSV_JetSubCalc->at(ijet) > 0.890) nbtags+=1;
+		  jetptindpair.push_back(std::make_pair(theJetPt_JetSubCalc->at(ijet),ijet));
+		  njets+=1;
+		  ht+=theJetPt_JetSubCalc->at(ijet);
+		  if(theJetCSV_JetSubCalc->at(ijet) > 0.890) nbtags+=1;
 	  
-	}else{
-	  jetptindpair.push_back(std::make_pair(theJetPt_JetSubCalc->at(ijet),ijet));
-	  njets+=1;
-	  ht+=theJetPt_JetSubCalc->at(ijet);
-	  if(theJetCSV_JetSubCalc->at(ijet) > 0.890) nbtags+=1;
-	}
+		}else{
+		  jetptindpair.push_back(std::make_pair(theJetPt_JetSubCalc->at(ijet),ijet));
+		  njets+=1;
+		  ht+=theJetPt_JetSubCalc->at(ijet);
+		  if(theJetCSV_JetSubCalc->at(ijet) > 0.890) nbtags+=1;
+		}
       }
 	
       //Pt ordering
@@ -935,6 +954,12 @@ void step1::Loop()
       theJetEnergy_JetSubCalc_PtOrdered.clear();
       theJetCSV_JetSubCalc_PtOrdered.clear();
       theJetBTag_JetSubCalc_PtOrdered.clear();
+//new format
+//       theJetBTag_bSFdn_JetSubCalc_PtOrdered.clear();
+//       theJetBTag_bSFup_JetSubCalc_PtOrdered.clear();
+//       theJetBTag_lSFdn_JetSubCalc_PtOrdered.clear();
+//       theJetBTag_lSFup_JetSubCalc_PtOrdered.clear();
+
       theJetBTagBuggy_JetSubCalc_PtOrdered.clear();
       for(unsigned int ijet=0; ijet < jetptindpair.size(); ijet++){
       	theJetPt_JetSubCalc_PtOrdered.push_back(theJetPt_JetSubCalc->at(jetptindpair[ijet].second));
@@ -943,6 +968,12 @@ void step1::Loop()
       	theJetEnergy_JetSubCalc_PtOrdered.push_back(theJetEnergy_JetSubCalc->at(jetptindpair[ijet].second));
       	theJetCSV_JetSubCalc_PtOrdered.push_back(theJetCSV_JetSubCalc->at(jetptindpair[ijet].second));
       	theJetBTag_JetSubCalc_PtOrdered.push_back(theJetBTag_JetSubCalc->at(jetptindpair[ijet].second));
+//new format
+//       	theJetBTag_bSFdn_JetSubCalc_PtOrdered.push_back(theJetBTag_bSFdn_JetSubCalc->at(jetptindpair[ijet].second));
+//       	theJetBTag_bSFup_JetSubCalc_PtOrdered.push_back(theJetBTag_bSFup_JetSubCalc->at(jetptindpair[ijet].second));
+//       	theJetBTag_lSFdn_JetSubCalc_PtOrdered.push_back(theJetBTag_lSFdn_JetSubCalc->at(jetptindpair[ijet].second));
+//       	theJetBTag_lSFup_JetSubCalc_PtOrdered.push_back(theJetBTag_lSFup_JetSubCalc->at(jetptindpair[ijet].second));
+
       	theJetBTagBuggy_JetSubCalc_PtOrdered.push_back(theJetBTagBuggy.at(jetptindpair[ijet].second));
       }
 
@@ -1017,20 +1048,21 @@ void step1::Loop()
 					isPastTrigMC = 1;
 					isPastTrigMC_trilep = 1;
 				}
-				if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4") && 
+				if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4") && 
 					viSelMCTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
 					isPastTrigMC_dilep = 1;
 				}
-				if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4") && 
+				if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v2" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v3" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v4") && 
 					viSelMCTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
+					isPastTrigMC_dilep = 1;
 					isPastTrigMC_dilepHT = 1;
 				}
 			}
@@ -1045,26 +1077,26 @@ void step1::Loop()
 					isPastTrigMC = 1;
 					isPastTrigMC_trilep = 1;
 				}
-				if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4") && 
+				if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4") && 
 					viSelMCTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
 					isPastTrigMC_dilep = 1;
 				}
-				if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4") && 
+				if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v2" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v3" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4") && 
 					viSelMCTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
 					isPastTrigMC_dilep = 1;
 				}
-				if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v1" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v2" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v3" || 
-					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v4") && 
+				if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3" || 
+					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4") && 
 					viSelMCTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
 					isPastTrigMC_dilep = 1;
@@ -1075,6 +1107,7 @@ void step1::Loop()
 					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v4") && 
 					viSelMCTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
+					isPastTrigMC_dilep = 1;
 					isPastTrigMC_dilepHT = 1;
 				}
 				if((vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1" || 
@@ -1083,6 +1116,7 @@ void step1::Loop()
 					vsSelMCTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v4") && 
 					viSelMCTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
+					isPastTrigMC_dilep = 1;
 					isPastTrigMC_dilepHT = 1;
 				}
 			}
@@ -1097,37 +1131,46 @@ void step1::Loop()
 					isPastTrigMC = 1;
 					isPastTrigMC_trilep = 1;
 				}
-				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v3" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v4") && 
+				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_v1" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_v2" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_v3" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_v4") && 
 					viSelMCTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
 					isPastTrigMC_dilep = 1;
 				}
-				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v3" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v4") && 
+				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v2" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v3" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4") && 
 					viSelMCTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
 					isPastTrigMC_dilep = 1;
 				}
-				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4") && 
+				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4") && 
 					viSelMCTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
 					isPastTrigMC_dilep = 1;
 				}
-				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v1" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v2" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v3" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v4") && 
+				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v1" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v2" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v3" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v4") && 
 					viSelMCTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
 					isPastTrigMC_dilep = 1;
+				}
+				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v1" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v2" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v3" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v4") && 
+					viSelMCTriggersMu_singleLepCalc->at(itrig) > 0){ 
+					isPastTrigMC = 1;
+					isPastTrigMC_dilep = 1;
+					isPastTrigMC_dilepHT = 1;
 				}
 				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT300_v1" || 
 					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT300_v2" || 
@@ -1135,6 +1178,7 @@ void step1::Loop()
 					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT300_v4") && 
 					viSelMCTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
+					isPastTrigMC_dilep = 1;
 					isPastTrigMC_dilepHT = 1;
 				}
 				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1" || 
@@ -1143,6 +1187,7 @@ void step1::Loop()
 					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v4") && 
 					viSelMCTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
+					isPastTrigMC_dilep = 1;
 					isPastTrigMC_dilepHT = 1;
 				}
 			}
@@ -1157,21 +1202,30 @@ void step1::Loop()
 					isPastTrigMC = 1;
 					isPastTrigMC_trilep = 1;
 				}
-				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v3" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v4") && 
+				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_v1" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_v2" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_v3" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_v4") && 
 					viSelMCTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
 					isPastTrigMC_dilep = 1;
 				}
-				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v3" || 
-					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v4") && 
+				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v1" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v2" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v3" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v4") && 
 					viSelMCTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrigMC = 1;
 					isPastTrigMC_dilep = 1;
+				}
+				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v1" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v2" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v3" || 
+					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v4") && 
+					viSelMCTriggersMu_singleLepCalc->at(itrig) > 0){
+					isPastTrigMC = 1;
+					isPastTrigMC_dilep = 1;
+					isPastTrigMC_dilepHT = 1;
 				}
 				if((vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT300_v1" || 
 					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT300_v2" || 
@@ -1179,6 +1233,7 @@ void step1::Loop()
 					vsSelMCTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT300_v4") && 
 					viSelMCTriggersMu_singleLepCalc->at(itrig) > 0){
 					isPastTrigMC = 1;
+					isPastTrigMC_dilep = 1;
 					isPastTrigMC_dilepHT = 1;
 				}
 			}
@@ -1422,20 +1477,21 @@ void step1::Loop()
 					isPastTrig = 1;
 					isPastTrig_trilep = 1;
 				}
-				if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4") && 
+				if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4") && 
 					viSelTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
 					isPastTrig_dilep = 1;
 				}
-				if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4") && 
+				if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v2" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v3" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v4") && 
 					viSelTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
+					isPastTrig_dilep = 1;
 					isPastTrig_dilepHT = 1;
 				}
 			}
@@ -1450,26 +1506,26 @@ void step1::Loop()
 					isPastTrig = 1;
 					isPastTrig_trilep = 1;
 				}
-				if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4") && 
+				if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4") && 
 					viSelTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
 					isPastTrig_dilep = 1;
 				}
-				if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4") && 
+				if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v2" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v3" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4") && 
 					viSelTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
 					isPastTrig_dilep = 1;
 				}
-				if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v1" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v2" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v3" || 
-					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v4") && 
+				if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3" || 
+					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4") && 
 					viSelTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
 					isPastTrig_dilep = 1;
@@ -1480,6 +1536,7 @@ void step1::Loop()
 					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v4") && 
 					viSelTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
+					isPastTrig_dilep = 1;
 					isPastTrig_dilepHT = 1;
 				}
 				if((vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1" || 
@@ -1488,6 +1545,7 @@ void step1::Loop()
 					vsSelTriggersEl_singleLepCalc->at(itrig) == "HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v4") && 
 					viSelTriggersEl_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
+					isPastTrig_dilep = 1;
 					isPastTrig_dilepHT = 1;
 				}
 			}
@@ -1502,37 +1560,46 @@ void step1::Loop()
 					isPastTrig = 1;
 					isPastTrig_trilep = 1;
 				}
-				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v3" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v4") && 
+				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_DZ_v1" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_DZ_v2" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_DZ_v3" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_DZ_v4") && 
 					viSelTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
 					isPastTrig_dilep = 1;
 				}
-				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v3" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v4") && 
-					viSelTriggersEl_singleLepCalc->at(itrig) > 0){ 
-					isPastTrig = 1;
-					isPastTrig_dilep = 1;
-				}
-				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4") && 
+				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v2" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v3" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4") && 
 					viSelTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
 					isPastTrig_dilep = 1;
 				}
-				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v1" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v2" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v3" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v4") && 
+				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4") && 
 					viSelTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
 					isPastTrig_dilep = 1;
+				}
+				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v1" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v2" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v3" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v4") && 
+					viSelTriggersMu_singleLepCalc->at(itrig) > 0){ 
+					isPastTrig = 1;
+					isPastTrig_dilep = 1;
+				}
+				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v1" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v2" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v3" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v4") && 
+					viSelTriggersMu_singleLepCalc->at(itrig) > 0){ 
+					isPastTrig = 1;
+					isPastTrig_dilep = 1;
+					isPastTrig_dilepHT = 1;
 				}
 				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT300_v1" || 
 					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT300_v2" || 
@@ -1540,6 +1607,7 @@ void step1::Loop()
 					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT300_v4") && 
 					viSelTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
+					isPastTrig_dilep = 1;
 					isPastTrig_dilepHT = 1;
 				}
 				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1" || 
@@ -1548,6 +1616,7 @@ void step1::Loop()
 					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v4") && 
 					viSelTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
+					isPastTrig_dilep = 1;
 					isPastTrig_dilepHT = 1;
 				}
 			}
@@ -1562,21 +1631,30 @@ void step1::Loop()
 					isPastTrig = 1;
 					isPastTrig_trilep = 1;
 				}
-				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v3" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v4") && 
+				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_DZ_v1" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_DZ_v2" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_DZ_v3" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_Mu8_SameSign_DZ_v4") && 
 					viSelTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
 					isPastTrig_dilep = 1;
 				}
-				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v3" || 
-					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v4") && 
+				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v1" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v2" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v3" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_Mu30_TkMu11_v4") && 
 					viSelTriggersMu_singleLepCalc->at(itrig) > 0){ 
 					isPastTrig = 1;
 					isPastTrig_dilep = 1;
+				}
+				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v1" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v2" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v3" || 
+					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT250_v4") && 
+					viSelTriggersMu_singleLepCalc->at(itrig) > 0){
+					isPastTrig = 1;
+					isPastTrig_dilep = 1;
+					isPastTrig_dilepHT = 1;
 				}
 				if((vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT300_v1" || 
 					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT300_v2" || 
@@ -1584,6 +1662,7 @@ void step1::Loop()
 					vsSelTriggersMu_singleLepCalc->at(itrig) == "HLT_DoubleMu8_Mass8_PFHT300_v4") && 
 					viSelTriggersMu_singleLepCalc->at(itrig) > 0){
 					isPastTrig = 1;
+					isPastTrig_dilep = 1;
 					isPastTrig_dilepHT = 1;
 				}
 			}
@@ -1734,10 +1813,33 @@ void step1::Loop()
 
       for(unsigned int ijet=0; ijet < theJetPt_JetSubCalc_PtOrdered.size(); ijet++){
         jet_lv.SetPtEtaPhiE(theJetPt_JetSubCalc_PtOrdered.at(ijet),theJetEta_JetSubCalc_PtOrdered.at(ijet),theJetPhi_JetSubCalc_PtOrdered.at(ijet),theJetEnergy_JetSubCalc_PtOrdered.at(ijet));
+
 		if(theJetBTag_JetSubCalc_PtOrdered.at(ijet) == 1){
 		  nbtagWithSF += 1;
 		  if(theJetPt_JetSubCalc_PtOrdered.at(ijet) > leadBJetPt) leadBJetPt = theJetPt_JetSubCalc_PtOrdered.at(ijet);
 		}
+//new format
+// 		if(theJetBTag_JetSubCalc_PtOrdered.at(ijet) == 1){
+// 		  nbtagWithSF += 1;
+// 		  if(theJetPt_JetSubCalc_PtOrdered.at(ijet) > BJetLeadPt) BJetLeadPt = theJetPt_JetSubCalc_PtOrdered.at(ijet);
+// 		}
+// 		if(theJetBTag_bSFup_JetSubCalc_PtOrdered.at(ijet) == 1){
+// 		  NJetsCSVwithSF_JetSubCalc_shifts.at(0) += 1;
+// 		  if(theJetPt_JetSubCalc_PtOrdered.at(ijet) > BJetLeadPt_shifts.at(0)) BJetLeadPt_shifts.at(0) = theJetPt_JetSubCalc_PtOrdered.at(ijet);
+// 		}
+// 		if(theJetBTag_bSFdn_JetSubCalc_PtOrdered.at(ijet) == 1){
+// 		  NJetsCSVwithSF_JetSubCalc_shifts.at(1) += 1;
+// 		  if(theJetPt_JetSubCalc_PtOrdered.at(ijet) > BJetLeadPt_shifts.at(1)) BJetLeadPt_shifts.at(1) = theJetPt_JetSubCalc_PtOrdered.at(ijet);
+// 		}
+// 		if(theJetBTag_lSFup_JetSubCalc_PtOrdered.at(ijet) == 1){
+// 		  NJetsCSVwithSF_JetSubCalc_shifts.at(2) += 1;
+// 		  if(theJetPt_JetSubCalc_PtOrdered.at(ijet) > BJetLeadPt_shifts.at(2)) BJetLeadPt_shifts.at(2) = theJetPt_JetSubCalc_PtOrdered.at(ijet);
+// 		}
+// 		if(theJetBTag_lSFdn_JetSubCalc_PtOrdered.at(ijet) == 1){
+// 		  NJetsCSVwithSF_JetSubCalc_shifts.at(3) += 1;
+// 		  if(theJetPt_JetSubCalc_PtOrdered.at(ijet) > BJetLeadPt_shifts.at(3)) BJetLeadPt_shifts.at(3) = theJetPt_JetSubCalc_PtOrdered.at(ijet);
+// 		}
+
 		deltaR_lep1Jets.push_back(lepton_lv.at(0).DeltaR(jet_lv));
 		deltaR_lep2Jets.push_back(lepton_lv.at(1).DeltaR(jet_lv));
 		deltaR_lep3Jets.push_back(lepton_lv.at(2).DeltaR(jet_lv));
