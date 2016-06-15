@@ -139,6 +139,7 @@ public :
    vector<int>     theJetBTag_lSFup_JetSubCalc_PtOrdered;
    vector<int>     theJetBTag_lSFdn_JetSubCalc_PtOrdered;   
    vector<int>     NJetsCSVwithSF_JetSubCalc_shifts;
+   vector<int>     NJetsCSVwithSF_JetSubCalc_noLepCorr_shifts;
 
    vector<double>  theJetAK8Pt_JetSubCalc_PtOrdered;
    vector<double>  theJetAK8Eta_JetSubCalc_PtOrdered;
@@ -181,6 +182,7 @@ public :
    Int_t           NJetsAK8_JetSubCalc;
    Int_t           NJetsCSV_JetSubCalc;
    Int_t           NJetsCSVwithSF_JetSubCalc;
+   Int_t           NJetsCSVwithSF_JetSubCalc_noLepCorr;
    Int_t           NJetsWtagged;
    Int_t           NJetsHtagged;
    Float_t         topPt;
@@ -630,6 +632,7 @@ public :
    TBranch        *b_NJetsAK8_JetSubCalc;
    TBranch        *b_NJetsCSV_JetSubCalc;
    TBranch        *b_NJetsCSVwithSF_JetSubCalc;
+   TBranch        *b_NJetsCSVwithSF_JetSubCalc_noLepCorr;
    TBranch        *b_NJetsWtagged;
    TBranch        *b_NJetsHtagged;
    TBranch        *b_topPt;
@@ -1434,6 +1437,7 @@ void step1::Init(TTree *tree)
    b_NJetsAK8_JetSubCalc=inputTree->Branch("NJetsAK8_JetSubCalc",&NJetsAK8_JetSubCalc,"NJetsAK8_JetSubCalc/I");
    b_NJetsCSV_JetSubCalc=inputTree->Branch("NJetsCSV_JetSubCalc",&NJetsCSV_JetSubCalc,"NJetsCSV_JetSubCalc/I");
    b_NJetsCSVwithSF_JetSubCalc=inputTree->Branch("NJetsCSVwithSF_JetSubCalc",&NJetsCSVwithSF_JetSubCalc,"NJetsCSVwithSF_JetSubCalc/I");
+   b_NJetsCSVwithSF_JetSubCalc_noLepCorr=inputTree->Branch("NJetsCSVwithSF_JetSubCalc_noLepCorr",&NJetsCSVwithSF_JetSubCalc_noLepCorr,"NJetsCSVwithSF_JetSubCalc_noLepCorr/I");
    b_NJetsWtagged=inputTree->Branch("NJetsWtagged",&NJetsWtagged,"NJetsWtagged/I");
    b_NJetsHtagged=inputTree->Branch("NJetsHtagged",&NJetsHtagged,"NJetsHtagged/I");
    b_topPt=inputTree->Branch("topPt",&topPt,"topPt/F");
