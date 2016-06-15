@@ -1,33 +1,25 @@
 #!/bin/bash
 
 
-#74x
+#76x
 
 echo "HADDING NOMINAL"
 
-python -u haddoutput.py LJMet_3lep_122115_step1_v2 LJMet_3lep_122115_step1_v2hadds nominal
+python -u haddoutput.py LJMet76In74_3lepTT_052716_step1_DEBUG_fixLooseEl LJMet76In74_3lepTT_052716_step1_DEBUG_fixLooseEl_hadds nominal
 
-echo "HADDING JECUP"
-
-python -u haddoutput.py LJMet_3lep_122115_step1_v2 LJMet_3lep_122115_step1_v2hadds JEC_up
-
-echo "HADDING JECDOWN"
-python -u haddoutput.py LJMet_3lep_122115_step1_v2 LJMet_3lep_122115_step1_v2hadds JEC_down
-
-echo "HADDING JERUP"
-
-python -u haddoutput.py LJMet_3lep_122115_step1_v2 LJMet_3lep_122115_step1_v2hadds JER_up
-
-echo "HADDING JERDOWN"
-
-python -u haddoutput.py LJMet_3lep_122115_step1_v2 LJMet_3lep_122115_step1_v2hadds JER_down
-
-echo "HADDING BTAGUP"
-
-python -u haddoutput.py LJMet_3lep_122115_step1_v2 LJMet_3lep_122115_step1_v2hadds BTag_up
-
-echo "HADDING BTAGDOWN"
-
-python -u haddoutput.py LJMet_3lep_122115_step1_v2 LJMet_3lep_122115_step1_v2hadds BTag_down
+# echo "HADDING JECUP"
+# 
+# python -u haddoutput.py LJMet76In74_3lepTT_052716_step1 LJMet76In74_3lepTT_052716_step1_hadds JECup
+# 
+# echo "HADDING JECDOWN"
+# python -u haddoutput.py LJMet76In74_3lepTT_052716_step1 LJMet76In74_3lepTT_052716_step1_hadds JECdown
+# 
+# echo "HADDING JERUP"
+# 
+# python -u haddoutput.py LJMet76In74_3lepTT_052716_step1 LJMet76In74_3lepTT_052716_step1_hadds JERup
+# 
+# echo "HADDING JERDOWN"
+# 
+# python -u haddoutput.py LJMet76In74_3lepTT_052716_step1 LJMet76In74_3lepTT_052716_step1_hadds JERdown
 
 echo "DONE"

@@ -8,41 +8,29 @@ python -u runCondorSlimmerJobs.py nominal
 
 sleep 5
 
-echo "SUBMITTING JEC_up"
-
-python -u runCondorSlimmerJobs.py JEC_up
-
-sleep 5
-
-echo "SUBMITTING JEC_down"
-
-python -u runCondorSlimmerJobs.py JEC_down
-
-sleep 5
-
-echo "SUBMITTING JER_up"
-
-python -u runCondorSlimmerJobs.py JER_up
-
-sleep 5
-
-echo "SUBMITTING JER_down"
-
-python -u runCondorSlimmerJobs.py JER_down
-
-sleep 5
-
-echo "SUBMITTING BTag_up"
-
-python -u runCondorSlimmerJobs.py BTag_up
-
-sleep 5
-
-echo "SUBMITTING BTag_down"
-
-python -u runCondorSlimmerJobs.py BTag_down
-
-sleep 5
+# echo "SUBMITTING JECup"
+# 
+# python -u runCondorSlimmerJobs.py JECup
+# 
+# sleep 5
+# 
+# echo "SUBMITTING JECdown"
+# 
+# python -u runCondorSlimmerJobs.py JECdown
+# 
+# sleep 5
+# 
+# echo "SUBMITTING JERup"
+# 
+# python -u runCondorSlimmerJobs.py JERup
+# 
+# sleep 5
+# 
+# echo "SUBMITTING JERdown"
+# 
+# python -u runCondorSlimmerJobs.py JERdown
+# 
+# sleep 5
 
 echo "DONE"
 

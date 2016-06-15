@@ -51,8 +51,16 @@ double W_lll(int mode, std::vector<double> lep1_info, std::vector<double> lep2_i
 
 /////////////////////////////
 
-TFile* file_el = TFile::Open("/uscms_data/d3/rsyarif/Spring2016/TprimeFakeRateReproduce/FromJulie/CMSSW_7_4_14/src/LJMet/macros/step1/FakeRatePlots/FakeRate_Data_subtr_El_PtEta.root");
-TFile* file_mu = TFile::Open("/uscms_data/d3/rsyarif/Spring2016/TprimeFakeRateReproduce/FromJulie/CMSSW_7_4_14/src/LJMet/macros/step1/FakeRatePlots/FakeRate_Data_subtr_Mu_PtEta.root");
+// TFile* file_el = TFile::Open("/uscms_data/d3/rsyarif/Spring2016/TprimeFakeRateReproduce/FromJulie/CMSSW_7_4_14/src/LJMet/macros/step1/FakeRatePlots/FakeRate_Data_subtr_El_PtEta.root");
+// TFile* file_mu = TFile::Open("/uscms_data/d3/rsyarif/Spring2016/TprimeFakeRateReproduce/FromJulie/CMSSW_7_4_14/src/LJMet/macros/step1/FakeRatePlots/FakeRate_Data_subtr_Mu_PtEta.root");
+
+TFile* file_el = TFile::Open("/uscms_data/d3/rsyarif/Spring2016/TprimeFakeRateReproduce/FromJulie/CMSSW_7_4_14/src/LJMet/macros/step1/FakeRateFiles/withWJetsIncl_subtrDenom/FakeRate_Data_subtr_El_PtEta.root");
+TFile* file_mu = TFile::Open("/uscms_data/d3/rsyarif/Spring2016/TprimeFakeRateReproduce/FromJulie/CMSSW_7_4_14/src/LJMet/macros/step1/FakeRateFiles/withWJetsIncl_subtrDenom/FakeRate_Data_subtr_Mu_PtEta.root");
+
+// TFile* file_el = TFile::Open("/uscms_data/d3/rsyarif/Spring2016/TprimeFakeRateReproduce/FromJulie/CMSSW_7_4_14/src/LJMet/macros/step1/FakeRateFiles/withWJetsIncl_subtrDenom/FakeRate_Data_subtr_El_Pt_1bin.root");
+// TFile* file_mu = TFile::Open("/uscms_data/d3/rsyarif/Spring2016/TprimeFakeRateReproduce/FromJulie/CMSSW_7_4_14/src/LJMet/macros/step1/FakeRateFiles/withWJetsIncl_subtrDenom/FakeRate_Data_subtr_Mu_Pt_1bin.root");
+
+
 TCanvas* c_el = (TCanvas*) file_el->Get("c1");
 TCanvas* c_mu = (TCanvas*) file_mu->Get("c1");
 TH2D *h_el = (TH2D*) c_el->GetPrimitive("newratioEl");
@@ -63,12 +71,15 @@ float Pr(int mode, std::vector<double> lep_info){
 	if(lep_info.at(0)==0){
 		//ele prompt rate
 // 		std::cout << "Ele: Mode: " << mode << ", " << prModeBehavior(mode) << " * uPr: " << uPr(lep_info)<< endl;
-		return 0.87 + uPr(lep_info)*prModeBehavior(mode);
+		return 0.87 + uPr(lep_info)*prModeBehavior(mode); //from anthony
+// 		return 0.873 + uPr(lep_info)*prModeBehavior(mode); // Clints
+
 	}
 	else{
 		//muon prompt rate
 // 		std::cout << "Mu: Mode: " << mode << ", " << prModeBehavior(mode) << " * uPr: " << uPr(lep_info)<< endl;
-		return 0.9836 + uPr(lep_info)*prModeBehavior(mode);
+		return 0.9836 + uPr(lep_info)*prModeBehavior(mode); //from anthony
+// 		return 0.940 + uPr(lep_info)*prModeBehavior(mode); //Clints
 	}
 }
 	
@@ -86,8 +97,9 @@ float Fr(int mode, std::vector<double> lep_info){
 		}
 // 		std::cout << "Ele -- " << ", pt: " << pt_el << ", eta: " << eta_el << ", weight = " << weight << std::endl; 
 // 		std::cout << "Ele: Mode: " << mode << ", " << frModeBehavior(mode) << " * uFr: " << uFr(lep_info)<< endl;
-// 		return 0.3305 + uFr(lep_info)*frModeBehavior(mode);
-		return weight + uFr(lep_info)*frModeBehavior(mode);
+		return 0.3305 + uFr(lep_info)*frModeBehavior(mode); //our calculation
+// 		return weight + uFr(lep_info)*frModeBehavior(mode);
+// 		return 0.298 + uFr(lep_info)*frModeBehavior(mode); //Clints
 
 
 	}
@@ -104,30 +116,35 @@ float Fr(int mode, std::vector<double> lep_info){
 		}
 // 		std::cout << "Mu -- " << ", pt: " << pt_mu << ", eta: " << eta_mu << ", weight = " << weight << std::endl; 
 // 		std::cout << "Mu: Mode: " << mode << ", " << frModeBehavior(mode) << " * uFr: " << uFr(lep_info)<< endl;
-// 		return 0.4673 + uFr(lep_info)*frModeBehavior(mode);
-		return weight + uFr(lep_info)*frModeBehavior(mode);
+		return 0.4673 + uFr(lep_info)*frModeBehavior(mode); //our calculation
+// 		return weight + uFr(lep_info)*frModeBehavior(mode);
+// 		return 0.371 + uFr(lep_info)*frModeBehavior(mode); //Clints
 	}
 }
 
 inline float uPr(std::vector<double> lep_info){
 	if(lep_info.at(0)==0){
 		//ele prompt rate unc
-		return 0.005;
+		return 0.005; //from anthony
+// 		return 0.001; //Clints
 	}
 	else{
 		//mu prompt rate unc
-		return 0.0003;
+		return 0.0003; //from anthony
+// 		return 0.001; //Clints
 	}
 }
 
 inline float uFr(std::vector<double> lep_info){
 	if(lep_info.at(0)==0){
 		//ele fake rate unc
-		return 0.017;
+		return 0.017; //our calculation
+// 		return 0.003; //Clints
 	}
 	else{
 		//mu fake rate unc
-		return 0.0016;
+		return 0.0016; //our calculation
+// 		return 0.002; //Clints
 	}
 }
 
